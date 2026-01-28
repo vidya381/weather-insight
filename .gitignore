@@ -31,3 +31,23 @@ Thumbs.db
 
 # Planning & Internal Documentation
 WEATHER_PROJECT_PLAN.md
+Portfolio projects/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Backend specific
+backend/.env
