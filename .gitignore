@@ -28,3 +28,6 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# Planning & Internal Documentation
+WEATHER_PROJECT_PLAN.md
