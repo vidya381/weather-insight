@@ -6,6 +6,7 @@ WeatherInsight - Weather Analysis with ML
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
+from app.routes import weather
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -24,6 +25,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Register routers
+app.include_router(weather.router)
 
 
 # Root endpoint
