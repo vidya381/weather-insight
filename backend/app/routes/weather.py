@@ -3,11 +3,13 @@ Weather API Routes
 Endpoints for weather data
 """
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Depends
 from typing import Optional
+from sqlalchemy.orm import Session
 import httpx
 
 from app.services.weather_service import weather_service
+from app.database import get_db
 from app.schemas.weather import (
     CurrentWeatherResponse,
     ForecastResponse,
@@ -29,15 +31,15 @@ router = APIRouter(prefix="/api/weather", tags=["Weather"])
         500: {"model": ErrorResponse, "description": "API error"}
     }
 )
-async def get_current_weather(city: str):
+async def get_current_weather(city: str, db: Session = Depends(get_db)):
     """
     Get current weather for a specified city
 
     - **city**: City name (e.g., "London", "New York", "Tokyo")
     """
     try:
-        # Fetch weather data from OpenWeather API
-        raw_data = await weather_service.get_current_weather(city)
+        # Fetch weather data from OpenWeather API and save to database
+        raw_data = await weather_service.get_current_weather(city, db)
 
         # Parse and return formatted response
         parsed_data = weather_service.parse_weather_response(raw_data)
@@ -175,7 +177,8 @@ async def get_weather_forecast(
 )
 async def get_weather_by_coordinates(
     lat: float = Query(..., ge=-90, le=90, description="Latitude"),
-    lon: float = Query(..., ge=-180, le=180, description="Longitude")
+    lon: float = Query(..., ge=-180, le=180, description="Longitude"),
+    db: Session = Depends(get_db)
 ):
     """
     Get current weather by geographical coordinates
@@ -184,8 +187,8 @@ async def get_weather_by_coordinates(
     - **lon**: Longitude (-180 to 180)
     """
     try:
-        # Fetch weather data
-        raw_data = await weather_service.get_weather_by_coordinates(lat, lon)
+        # Fetch weather data and save to database
+        raw_data = await weather_service.get_weather_by_coordinates(lat, lon, db)
 
         # Parse and return formatted response
         parsed_data = weather_service.parse_weather_response(raw_data)

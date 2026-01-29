@@ -5,7 +5,12 @@ Handles OpenWeatherMap API integration
 
 import httpx
 from typing import Dict, Any, Optional
+from datetime import datetime
+from sqlalchemy.orm import Session
+
 from app.config import settings
+from app.repositories.city_repository import CityRepository
+from app.repositories.weather_repository import WeatherRepository
 
 
 class WeatherService:
@@ -15,12 +20,17 @@ class WeatherService:
         self.base_url = settings.OPENWEATHER_BASE_URL
         self.api_key = settings.OPENWEATHER_API_KEY
 
-    async def get_current_weather(self, city: str) -> Dict[str, Any]:
+    async def get_current_weather(
+        self,
+        city: str,
+        db: Optional[Session] = None
+    ) -> Dict[str, Any]:
         """
-        Get current weather for a city
+        Get current weather for a city and optionally save to database
 
         Args:
             city: City name (e.g., "London", "New York")
+            db: Database session (optional, for saving data)
 
         Returns:
             Dict containing weather data
@@ -41,7 +51,13 @@ class WeatherService:
         async with httpx.AsyncClient() as client:
             response = await client.get(url, params=params, timeout=10.0)
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+
+        # Save to database if session provided
+        if db:
+            self._save_weather_data(db, data)
+
+        return data
 
     async def get_forecast(self, city: str, days: int = 7) -> Dict[str, Any]:
         """
@@ -73,14 +89,16 @@ class WeatherService:
     async def get_weather_by_coordinates(
         self,
         latitude: float,
-        longitude: float
+        longitude: float,
+        db: Optional[Session] = None
     ) -> Dict[str, Any]:
         """
-        Get current weather by coordinates
+        Get current weather by coordinates and optionally save to database
 
         Args:
             latitude: Latitude
             longitude: Longitude
+            db: Database session (optional, for saving data)
 
         Returns:
             Dict containing weather data
@@ -99,7 +117,13 @@ class WeatherService:
         async with httpx.AsyncClient() as client:
             response = await client.get(url, params=params, timeout=10.0)
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+
+        # Save to database if session provided
+        if db:
+            self._save_weather_data(db, data)
+
+        return data
 
     def parse_weather_response(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -138,6 +162,69 @@ class WeatherService:
             "timestamp": data.get("dt"),
             "timezone": data.get("timezone"),
         }
+
+    def _save_weather_data(self, db: Session, data: Dict[str, Any]) -> None:
+        """
+        Save weather data to database
+
+        Args:
+            db: Database session
+            data: Raw OpenWeather API response
+        """
+        try:
+            # Extract city information
+            city_name = data.get("name")
+            country = data.get("sys", {}).get("country")
+            latitude = data.get("coord", {}).get("lat")
+            longitude = data.get("coord", {}).get("lon")
+            timezone = str(data.get("timezone")) if data.get("timezone") else None
+
+            if not all([city_name, country, latitude, longitude]):
+                print(f"⚠️  Incomplete city data, skipping save: {city_name}")
+                return
+
+            # Get or create city
+            city = CityRepository.get_or_create(
+                db=db,
+                name=city_name,
+                country=country,
+                latitude=latitude,
+                longitude=longitude,
+                timezone=timezone
+            )
+
+            # Convert Unix timestamp to datetime
+            timestamp = datetime.utcfromtimestamp(data.get("dt", 0))
+
+            # Extract weather data
+            main = data.get("main", {})
+            weather = data.get("weather", [{}])[0]
+            wind = data.get("wind", {})
+
+            # Save weather data
+            WeatherRepository.create(
+                db=db,
+                city_id=city.id,
+                timestamp=timestamp,
+                temperature=main.get("temp"),
+                feels_like=main.get("feels_like"),
+                temp_min=main.get("temp_min"),
+                temp_max=main.get("temp_max"),
+                pressure=main.get("pressure"),
+                humidity=main.get("humidity"),
+                weather_main=weather.get("main"),
+                weather_description=weather.get("description"),
+                wind_speed=wind.get("speed"),
+                wind_direction=wind.get("deg"),
+                clouds=data.get("clouds", {}).get("all"),
+                visibility=data.get("visibility")
+            )
+
+            print(f"✅ Saved weather data for {city_name}, {country}")
+
+        except Exception as e:
+            print(f"⚠️  Failed to save weather data: {e}")
+            db.rollback()
 
 
 # Create singleton instance
