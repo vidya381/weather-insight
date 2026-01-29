@@ -7,10 +7,15 @@ import httpx
 from typing import Dict, Any, Optional
 from datetime import datetime
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError, OperationalError
+import logging
 
 from app.config import settings
 from app.repositories.city_repository import CityRepository
 from app.repositories.weather_repository import WeatherRepository
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 
 class WeatherService:
@@ -180,7 +185,7 @@ class WeatherService:
             timezone = str(data.get("timezone")) if data.get("timezone") else None
 
             if not all([city_name, country, latitude, longitude]):
-                print(f"⚠️  Incomplete city data, skipping save: {city_name}")
+                logger.warning(f"⚠️  Incomplete city data, skipping save: {city_name}")
                 return
 
             # Get or create city
@@ -195,7 +200,7 @@ class WeatherService:
 
             # Check for recent data (within last 10 minutes)
             if WeatherRepository.has_recent_data(db, city.id, minutes=10):
-                print(f"ℹ️  Recent data exists for {city_name}, {country} - skipping save")
+                logger.info(f"ℹ️  Recent data exists for {city_name}, {country} - skipping save")
                 return
 
             # Convert Unix timestamp to datetime
@@ -225,11 +230,23 @@ class WeatherService:
                 visibility=data.get("visibility")
             )
 
-            print(f"✅ Saved weather data for {city_name}, {country}")
+            logger.info(f"✅ Saved weather data for {city_name}, {country}")
+
+        except IntegrityError as e:
+            db.rollback()
+            logger.warning(f"⚠️  Data integrity error for {city_name}: {str(e)}")
+
+        except OperationalError as e:
+            db.rollback()
+            logger.error(f"❌ Database connection error for {city_name}: {str(e)}")
+
+        except SQLAlchemyError as e:
+            db.rollback()
+            logger.error(f"❌ Database error saving weather data for {city_name}: {str(e)}")
 
         except Exception as e:
-            print(f"⚠️  Failed to save weather data: {e}")
             db.rollback()
+            logger.error(f"❌ Unexpected error saving weather data for {city_name}: {str(e)}", exc_info=True)
 
 
 # Create singleton instance

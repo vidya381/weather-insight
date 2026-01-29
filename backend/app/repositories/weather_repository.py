@@ -7,9 +7,13 @@ from typing import Optional, List
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
+from sqlalchemy.exc import SQLAlchemyError
+import logging
 
 from app.models.weather import WeatherData
 from app.models.city import City
+
+logger = logging.getLogger(__name__)
 
 
 class WeatherRepository:
@@ -63,10 +67,15 @@ class WeatherRepository:
             visibility=visibility
         )
 
-        db.add(weather_data)
-        db.commit()
-        db.refresh(weather_data)
-        return weather_data
+        try:
+            db.add(weather_data)
+            db.commit()
+            db.refresh(weather_data)
+            return weather_data
+        except SQLAlchemyError as e:
+            db.rollback()
+            logger.error(f"Failed to create weather record for city_id {city_id}: {str(e)}")
+            raise
 
     @staticmethod
     def get_latest_by_city(db: Session, city_id: int) -> Optional[WeatherData]:

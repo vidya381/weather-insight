@@ -5,9 +5,12 @@ Database operations for City model
 
 from typing import Optional
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+import logging
 
 from app.models.city import City
+
+logger = logging.getLogger(__name__)
 
 
 class CityRepository:
@@ -81,13 +84,20 @@ class CityRepository:
             db.add(new_city)
             db.commit()
             db.refresh(new_city)
+            logger.info(f"Created new city: {name}, {country}")
             return new_city
-        except IntegrityError:
+        except IntegrityError as e:
             # Handle race condition - another request created the city
             db.rollback()
+            logger.debug(f"City already exists (race condition), fetching: {name}, {country}")
             city = CityRepository.get_by_name_and_country(db, name, country)
             if city:
                 return city
+            logger.error(f"Failed to create or fetch city {name}, {country}: {str(e)}")
+            raise
+        except SQLAlchemyError as e:
+            db.rollback()
+            logger.error(f"Database error creating city {name}, {country}: {str(e)}")
             raise
 
     @staticmethod
