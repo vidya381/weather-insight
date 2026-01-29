@@ -4,3 +4,8 @@ uvicorn[standard]
 python-dotenv
 httpx
 pydantic-settings
+
+# Database
+sqlalchemy
+alembic
+psycopg2-binary

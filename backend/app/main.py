@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routes import weather
+from app.database import engine
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -57,6 +58,14 @@ async def startup_event():
     """Execute on application startup"""
     print("🚀 WeatherInsight API starting up...")
     print(f"📝 API Documentation: http://{settings.HOST}:{settings.PORT}/docs")
+
+    # Test database connection
+    try:
+        with engine.connect() as conn:
+            print("✅ Database connected successfully")
+    except Exception as e:
+        print(f"⚠️  Database connection failed: {e}")
+        print("   Check DATABASE_SETUP.md for setup instructions")
 
 
 # Shutdown event
