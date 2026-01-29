@@ -186,3 +186,23 @@ class WeatherRepository:
         return db.query(WeatherData).filter(
             WeatherData.city_id == city_id
         ).count()
+
+    @staticmethod
+    def has_recent_data(db: Session, city_id: int, minutes: int = 10) -> bool:
+        """
+        Check if weather data exists for a city within the last N minutes
+
+        Args:
+            db: Database session
+            city_id: City ID
+            minutes: Time window in minutes (default: 10)
+
+        Returns:
+            True if recent data exists, False otherwise
+        """
+        cutoff_time = datetime.utcnow() - timedelta(minutes=minutes)
+        count = db.query(WeatherData).filter(
+            WeatherData.city_id == city_id,
+            WeatherData.timestamp >= cutoff_time
+        ).count()
+        return count > 0

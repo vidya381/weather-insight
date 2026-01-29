@@ -193,6 +193,11 @@ class WeatherService:
                 timezone=timezone
             )
 
+            # Check for recent data (within last 10 minutes)
+            if WeatherRepository.has_recent_data(db, city.id, minutes=10):
+                print(f"ℹ️  Recent data exists for {city_name}, {country} - skipping save")
+                return
+
             # Convert Unix timestamp to datetime
             timestamp = datetime.utcfromtimestamp(data.get("dt", 0))
 
