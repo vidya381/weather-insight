@@ -50,3 +50,4 @@ htmlcov/
 
 # Backend specific
 backend/.env
+backend/alembic/versions/__pycache__/
