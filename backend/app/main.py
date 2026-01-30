@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routes import weather
 from app.database import engine
+from app.jobs import scheduler_service
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -67,12 +68,25 @@ async def startup_event():
         print(f"⚠️  Database connection failed: {e}")
         print("   Check DATABASE_SETUP.md for setup instructions")
 
+    # Start scheduler
+    try:
+        scheduler_service.start()
+        print("✅ Background scheduler started")
+    except Exception as e:
+        print(f"⚠️  Failed to start scheduler: {e}")
+
 
 # Shutdown event
 @app.on_event("shutdown")
 async def shutdown_event():
     """Execute on application shutdown"""
     print("👋 WeatherInsight API shutting down...")
+
+    # Shutdown scheduler
+    try:
+        scheduler_service.shutdown()
+    except Exception as e:
+        print(f"⚠️  Error shutting down scheduler: {e}")
 
 
 if __name__ == "__main__":
