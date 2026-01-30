@@ -6,7 +6,7 @@ WeatherInsight - Weather Analysis with ML
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
-from app.routes import weather
+from app.routes import weather, jobs
 from app.database import engine
 from app.jobs import scheduler_service
 from app.jobs.weather_collection import register_weather_collection_job
@@ -32,6 +32,7 @@ app.add_middleware(
 
 # Register routers
 app.include_router(weather.router)
+app.include_router(jobs.router)
 
 
 # Root endpoint
