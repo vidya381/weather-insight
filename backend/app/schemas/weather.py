@@ -118,6 +118,93 @@ class ForecastResponse(BaseModel):
         }
 
 
+class WeatherHistoryItem(BaseModel):
+    """Single historical weather record"""
+    timestamp: datetime
+    temperature: float
+    feels_like: Optional[float] = None
+    temp_min: Optional[float] = None
+    temp_max: Optional[float] = None
+    pressure: Optional[int] = None
+    humidity: Optional[int] = None
+    weather_main: Optional[str] = None
+    weather_description: Optional[str] = None
+    wind_speed: Optional[float] = None
+    wind_direction: Optional[int] = None
+    clouds: Optional[int] = None
+    visibility: Optional[int] = None
+
+    class Config:
+        from_attributes = True
+
+
+class WeatherHistoryResponse(BaseModel):
+    """Response model for historical weather data"""
+    city: str
+    country: str
+    records: list[WeatherHistoryItem]
+    total: int = Field(..., description="Total number of records")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "city": "London",
+                "country": "GB",
+                "records": [
+                    {
+                        "timestamp": "2026-01-29T10:00:00",
+                        "temperature": 15.5,
+                        "feels_like": 14.2,
+                        "humidity": 72,
+                        "pressure": 1013,
+                        "weather_main": "Clouds",
+                        "weather_description": "few clouds"
+                    }
+                ],
+                "total": 1
+            }
+        }
+
+
+class DailyAggregateItem(BaseModel):
+    """Daily weather statistics"""
+    date: str = Field(..., description="Date in YYYY-MM-DD format")
+    avg_temp: Optional[float] = Field(None, description="Average temperature")
+    min_temp: Optional[float] = Field(None, description="Minimum temperature")
+    max_temp: Optional[float] = Field(None, description="Maximum temperature")
+    avg_humidity: Optional[float] = Field(None, description="Average humidity")
+    avg_pressure: Optional[float] = Field(None, description="Average pressure")
+    record_count: int = Field(..., description="Number of records for this day")
+
+
+class DailyAggregateResponse(BaseModel):
+    """Response model for daily weather aggregates"""
+    city: str
+    country: str
+    daily_stats: list[DailyAggregateItem]
+    days: int = Field(..., description="Number of days included")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "city": "London",
+                "country": "GB",
+                "daily_stats": [
+                    {
+                        "date": "2026-01-29",
+                        "avg_temp": 15.5,
+                        "min_temp": 13.0,
+                        "max_temp": 17.0,
+                        "avg_humidity": 72.0,
+                        "avg_pressure": 1013.0,
+                        "record_count": 24
+                    }
+                ],
+                "days": 1
+            }
+        }
+
+
 class ErrorResponse(BaseModel):
     """Error response model"""
     error: str
