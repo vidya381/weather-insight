@@ -12,7 +12,6 @@ from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.database import get_db
-from app.repositories.user_repository import UserRepository
 
 # Security scheme for JWT bearer token
 security = HTTPBearer()
@@ -105,6 +104,9 @@ async def get_current_user(
     user_id: int = payload.get("user_id")
     if user_id is None:
         raise credentials_exception
+
+    # Import here to avoid circular dependency
+    from app.repositories.user_repository import UserRepository
 
     # Get user from database
     user = UserRepository.get_by_id(db, user_id)
