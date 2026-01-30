@@ -9,6 +9,8 @@ from app.config import settings
 from app.routes import weather
 from app.database import engine
 from app.jobs import scheduler_service
+from app.jobs.weather_collection import register_weather_collection_job
+from app.jobs.data_retention import register_data_retention_job
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -68,10 +70,15 @@ async def startup_event():
         print(f"⚠️  Database connection failed: {e}")
         print("   Check DATABASE_SETUP.md for setup instructions")
 
-    # Start scheduler
+    # Start scheduler and register jobs
     try:
+        # Register jobs before starting scheduler
+        register_weather_collection_job(scheduler_service)
+        register_data_retention_job(scheduler_service)
+
+        # Start the scheduler
         scheduler_service.start()
-        print("✅ Background scheduler started")
+        print("✅ Background scheduler started with jobs")
     except Exception as e:
         print(f"⚠️  Failed to start scheduler: {e}")
 
