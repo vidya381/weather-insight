@@ -6,8 +6,11 @@ WeatherInsight - Weather Analysis with ML
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
-from app.routes import weather
+from app.routes import weather, jobs
 from app.database import engine
+from app.jobs import scheduler_service
+from app.jobs.weather_collection import register_weather_collection_job
+from app.jobs.data_retention import register_data_retention_job
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -29,6 +32,7 @@ app.add_middleware(
 
 # Register routers
 app.include_router(weather.router)
+app.include_router(jobs.router)
 
 
 # Root endpoint
@@ -67,12 +71,30 @@ async def startup_event():
         print(f"⚠️  Database connection failed: {e}")
         print("   Check DATABASE_SETUP.md for setup instructions")
 
+    # Start scheduler and register jobs
+    try:
+        # Register jobs before starting scheduler
+        register_weather_collection_job(scheduler_service)
+        register_data_retention_job(scheduler_service)
+
+        # Start the scheduler
+        scheduler_service.start()
+        print("✅ Background scheduler started with jobs")
+    except Exception as e:
+        print(f"⚠️  Failed to start scheduler: {e}")
+
 
 # Shutdown event
 @app.on_event("shutdown")
 async def shutdown_event():
     """Execute on application shutdown"""
     print("👋 WeatherInsight API shutting down...")
+
+    # Shutdown scheduler
+    try:
+        scheduler_service.shutdown()
+    except Exception as e:
+        print(f"⚠️  Error shutting down scheduler: {e}")
 
 
 if __name__ == "__main__":
