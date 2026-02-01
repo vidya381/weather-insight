@@ -6,6 +6,11 @@
   margin-bottom: 1.5rem;
 }
 
+body.dark-mode .ml-section {
+  background: #1A1A1A;
+  border-color: #2A2A2A;
+}
+
 .ml-header {
   display: flex;
   justify-content: space-between;
@@ -20,6 +25,10 @@
   margin: 0;
 }
 
+body.dark-mode .ml-header h3 {
+  color: #E1E1E6;
+}
+
 .ml-select {
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
@@ -28,6 +37,12 @@
   border: 1px solid #d1d5db;
   border-radius: 6px;
   cursor: pointer;
+}
+
+body.dark-mode .ml-select {
+  color: #C1C1C6;
+  background: #1A1A1A;
+  border-color: #2A2A2A;
 }
 
 .ml-select:focus {
@@ -43,8 +58,16 @@
   font-size: 0.95rem;
 }
 
+body.dark-mode .ml-loading {
+  color: #8B8B8F;
+}
+
 .ml-error {
   color: #dc2626;
+}
+
+body.dark-mode .ml-error {
+  color: #F87171;
 }
 
 .ml-empty {
@@ -57,9 +80,17 @@
   color: #6b7280;
 }
 
+body.dark-mode .ml-empty p {
+  color: #8B8B8F;
+}
+
 .ml-empty-hint {
   font-size: 0.875rem;
   color: #9ca3af;
+}
+
+body.dark-mode .ml-empty-hint {
+  color: #6B6B6F;
 }
 
 /* Anomaly Styles */
@@ -73,6 +104,10 @@
   border: 1px solid #e5e5e5;
   border-radius: 8px;
   padding: 1rem;
+}
+
+body.dark-mode .anomaly-item {
+  border-color: #2A2A2A;
 }
 
 .anomaly-header {
@@ -98,6 +133,10 @@
   color: #6b7280;
 }
 
+body.dark-mode .anomaly-date {
+  color: #8B8B8F;
+}
+
 .anomaly-details {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -117,10 +156,18 @@
   text-transform: uppercase;
 }
 
+body.dark-mode .value-label {
+  color: #6B6B6F;
+}
+
 .value-number {
   font-size: 1.125rem;
   font-weight: 600;
   color: #111827;
+}
+
+body.dark-mode .value-number {
+  color: #E1E1E6;
 }
 
 .value-number.deviation {
@@ -133,6 +180,11 @@
   border-top: 1px solid #f3f4f6;
   font-size: 0.875rem;
   color: #6b7280;
+}
+
+body.dark-mode .anomaly-description {
+  border-top-color: #252525;
+  color: #8B8B8F;
 }
 
 /* Trend Styles */
@@ -152,6 +204,10 @@
   border-radius: 8px;
 }
 
+body.dark-mode .trend-stat {
+  background: #151515;
+}
+
 .stat-label {
   font-size: 0.75rem;
   color: #9ca3af;
@@ -159,10 +215,18 @@
   letter-spacing: 0.05em;
 }
 
+body.dark-mode .stat-label {
+  color: #6B6B6F;
+}
+
 .stat-value {
   font-size: 1.25rem;
   font-weight: 600;
   color: #111827;
+}
+
+body.dark-mode .stat-value {
+  color: #E1E1E6;
 }
 
 .trend-interpretation {
@@ -173,10 +237,19 @@
   margin-bottom: 1.5rem;
 }
 
+body.dark-mode .trend-interpretation {
+  background: #151515;
+  border-left-color: #3B82F6;
+}
+
 .trend-interpretation p {
   margin: 0;
   font-size: 0.95rem;
   color: #374151;
+}
+
+body.dark-mode .trend-interpretation p {
+  color: #C1C1C6;
 }
 
 .trend-chart {
@@ -190,11 +263,19 @@
   margin: 0 0 1rem 0;
 }
 
+body.dark-mode .trend-chart h4 {
+  color: #E1E1E6;
+}
+
 .trend-stats h4 {
   font-size: 0.95rem;
   font-weight: 600;
   color: #111827;
   margin: 0 0 1rem 0;
+}
+
+body.dark-mode .trend-stats h4 {
+  color: #E1E1E6;
 }
 
 .stats-grid {
@@ -223,6 +304,10 @@
   padding: 1rem;
 }
 
+body.dark-mode .pattern-item {
+  border-color: #2A2A2A;
+}
+
 .pattern-header {
   display: flex;
   justify-content: space-between;
@@ -244,6 +329,10 @@
   color: #6b7280;
 }
 
+body.dark-mode .pattern-date {
+  color: #8B8B8F;
+}
+
 .pattern-characteristics {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -251,6 +340,10 @@
   margin-bottom: 0.75rem;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid #f3f4f6;
+}
+
+body.dark-mode .pattern-characteristics {
+  border-bottom-color: #252525;
 }
 
 .char-item {
@@ -264,10 +357,18 @@
   color: #9ca3af;
 }
 
+body.dark-mode .char-label {
+  color: #6B6B6F;
+}
+
 .char-value {
   font-size: 1rem;
   font-weight: 500;
   color: #111827;
+}
+
+body.dark-mode .char-value {
+  color: #E1E1E6;
 }
 
 .similar-dates {
@@ -280,6 +381,10 @@
   font-size: 0.75rem;
   color: #9ca3af;
   text-transform: uppercase;
+}
+
+body.dark-mode .similar-label {
+  color: #6B6B6F;
 }
 
 .similar-list {
@@ -297,11 +402,20 @@
   color: #374151;
 }
 
+body.dark-mode .similar-date {
+  background: #252525;
+  color: #C1C1C6;
+}
+
 .similar-more {
   display: inline-block;
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
   color: #6b7280;
+}
+
+body.dark-mode .similar-more {
+  color: #8B8B8F;
 }
 
 .pattern-info {
@@ -310,11 +424,19 @@
   border-radius: 6px;
 }
 
+body.dark-mode .pattern-info {
+  background: #151515;
+}
+
 .info-text {
   margin: 0;
   font-size: 0.875rem;
   color: #6b7280;
   line-height: 1.5;
+}
+
+body.dark-mode .info-text {
+  color: #8B8B8F;
 }
 
 /* Responsive Design */

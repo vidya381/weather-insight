@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import ThemeToggle from '../components/ThemeToggle';
 import './Auth.css';
 
 export default function Login() {
@@ -34,6 +35,9 @@ export default function Login() {
 
   return (
     <div className="auth-container">
+      <div className="theme-toggle-auth">
+        <ThemeToggle />
+      </div>
       <div className="auth-box">
         <h1>WeatherInsight</h1>
         <h2>Sign in to your account</h2>

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { citiesAPI } from '../api/cities';
 import CitySearch from '../components/CitySearch';
 import WeatherWidget from '../components/WeatherWidget';
+import ThemeToggle from '../components/ThemeToggle';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -58,6 +59,7 @@ export default function Dashboard() {
               ML Insights
             </button>
             <span className="user-name">{user?.username}</span>
+            <ThemeToggle />
             <button onClick={handleLogout} className="btn-secondary">
               Logout
             </button>

@@ -3,9 +3,18 @@
   background-color: #f5f5f5;
 }
 
+body.dark-mode .dashboard {
+  background-color: #0D0D0D;
+}
+
 .dashboard-header {
   background-color: #ffffff;
   border-bottom: 1px solid #e5e5e5;
+}
+
+body.dark-mode .dashboard-header {
+  background-color: #1A1A1A;
+  border-bottom-color: #2A2A2A;
 }
 
 .header-content {
@@ -24,6 +33,10 @@
   margin: 0;
 }
 
+body.dark-mode .dashboard-header h1 {
+  color: #E1E1E6;
+}
+
 .header-actions {
   display: flex;
   align-items: center;
@@ -33,6 +46,10 @@
 .user-name {
   font-size: 0.95rem;
   color: #6b7280;
+}
+
+body.dark-mode .user-name {
+  color: #8B8B8F;
 }
 
 .btn-secondary {
@@ -52,6 +69,17 @@
   border-color: #9ca3af;
 }
 
+body.dark-mode .btn-secondary {
+  color: #C1C1C6;
+  background-color: #1A1A1A;
+  border-color: #2A2A2A;
+}
+
+body.dark-mode .btn-secondary:hover {
+  background-color: #252525;
+  border-color: #3A3A3A;
+}
+
 .dashboard-main {
   max-width: 1400px;
   margin: 0 auto;
@@ -65,10 +93,18 @@
   margin: 0 0 0.5rem 0;
 }
 
+body.dark-mode .dashboard-content h2 {
+  color: #E1E1E6;
+}
+
 .dashboard-content p {
   font-size: 1rem;
   color: #6b7280;
   margin: 0;
+}
+
+body.dark-mode .dashboard-content p {
+  color: #8B8B8F;
 }
 
 .search-section {
@@ -92,12 +128,21 @@
   font-size: 0.95rem;
 }
 
+body.dark-mode .loading-message {
+  color: #8B8B8F;
+}
+
 .empty-message {
   text-align: center;
   padding: 3rem 1rem;
   background: #ffffff;
   border: 1px solid #e5e5e5;
   border-radius: 12px;
+}
+
+body.dark-mode .empty-message {
+  background: #1A1A1A;
+  border-color: #2A2A2A;
 }
 
 .empty-message p {
@@ -107,6 +152,10 @@
 .empty-hint {
   font-size: 0.875rem;
   color: #9ca3af;
+}
+
+body.dark-mode .empty-hint {
+  color: #6B6B6F;
 }
 
 .weather-grid {
