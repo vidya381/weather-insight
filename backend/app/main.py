@@ -3,6 +3,7 @@ FastAPI Main Application
 WeatherInsight - Weather Analysis with ML
 """
 
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
@@ -12,13 +13,56 @@ from app.jobs import scheduler_service
 from app.jobs.weather_collection import register_weather_collection_job
 from app.jobs.data_retention import register_data_retention_job
 
-# Initialize FastAPI app
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Lifespan context manager for startup and shutdown events
+    """
+    # Startup
+    print("🚀 WeatherInsight API starting up...")
+    print(f"📝 API Documentation: http://{settings.HOST}:{settings.PORT}/docs")
+
+    # Test database connection
+    try:
+        with engine.connect() as conn:
+            print("✅ Database connected successfully")
+    except Exception as e:
+        print(f"⚠️  Database connection failed: {e}")
+        print("   Check DATABASE_SETUP.md for setup instructions")
+
+    # Start scheduler and register jobs
+    try:
+        # Register jobs before starting scheduler
+        register_weather_collection_job(scheduler_service)
+        register_data_retention_job(scheduler_service)
+
+        # Start the scheduler
+        scheduler_service.start()
+        print("✅ Background scheduler started with jobs")
+    except Exception as e:
+        print(f"⚠️  Failed to start scheduler: {e}")
+
+    yield  # Application is running
+
+    # Shutdown
+    print("👋 WeatherInsight API shutting down...")
+
+    # Shutdown scheduler
+    try:
+        scheduler_service.shutdown()
+    except Exception as e:
+        print(f"⚠️  Error shutting down scheduler: {e}")
+
+
+# Initialize FastAPI app with lifespan
 app = FastAPI(
     title="WeatherInsight API",
     description="Weather analysis platform with ML-powered insights",
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    lifespan=lifespan
 )
 
 # CORS Configuration
@@ -57,47 +101,6 @@ async def health_check():
         "status": "healthy",
         "service": "weatherinsight-api"
     }
-
-
-# Startup event
-@app.on_event("startup")
-async def startup_event():
-    """Execute on application startup"""
-    print("🚀 WeatherInsight API starting up...")
-    print(f"📝 API Documentation: http://{settings.HOST}:{settings.PORT}/docs")
-
-    # Test database connection
-    try:
-        with engine.connect() as conn:
-            print("✅ Database connected successfully")
-    except Exception as e:
-        print(f"⚠️  Database connection failed: {e}")
-        print("   Check DATABASE_SETUP.md for setup instructions")
-
-    # Start scheduler and register jobs
-    try:
-        # Register jobs before starting scheduler
-        register_weather_collection_job(scheduler_service)
-        register_data_retention_job(scheduler_service)
-
-        # Start the scheduler
-        scheduler_service.start()
-        print("✅ Background scheduler started with jobs")
-    except Exception as e:
-        print(f"⚠️  Failed to start scheduler: {e}")
-
-
-# Shutdown event
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Execute on application shutdown"""
-    print("👋 WeatherInsight API shutting down...")
-
-    # Shutdown scheduler
-    try:
-        scheduler_service.shutdown()
-    except Exception as e:
-        print(f"⚠️  Error shutting down scheduler: {e}")
 
 
 if __name__ == "__main__":
