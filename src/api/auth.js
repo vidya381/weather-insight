@@ -12,7 +12,7 @@ export const authAPI = {
 
   login: async (username, password) => {
     const response = await apiClient.post('/api/auth/login', {
-      username,
+      username_or_email: username,
       password,
     });
     return response.data;
