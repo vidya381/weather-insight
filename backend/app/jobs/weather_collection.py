@@ -9,6 +9,7 @@ from typing import List
 
 from app.database import SessionLocal
 from app.repositories.city_repository import CityRepository
+from app.repositories.favorite_city_repository import FavoriteCityRepository
 from app.services.weather_service import weather_service
 from app.models.city import City
 
@@ -39,22 +40,24 @@ async def collect_weather_for_city(city: City, db):
 
 def collect_weather_for_all_cities():
     """
-    Main job function - collect weather for all cities in database
+    Main job function - collect weather for favorite cities
 
-    This function is called by the scheduler
+    This function is called by the scheduler.
+    Only collects weather for cities that are favorited by at least one user.
+    This optimizes API usage and respects free tier limits.
     """
     db = SessionLocal()
     try:
         logger.info("🌤️  Starting weather collection job...")
 
-        # Get all cities from database
-        cities = CityRepository.get_all(db, skip=0, limit=1000)
+        # Get only favorited cities (optimized for API usage)
+        cities = FavoriteCityRepository.get_all_favorited_cities(db)
 
         if not cities:
-            logger.info("No cities in database to collect weather for")
+            logger.info("No favorite cities to collect weather for. Users should add cities to favorites.")
             return
 
-        logger.info(f"Found {len(cities)} cities to update")
+        logger.info(f"Found {len(cities)} favorite cities to update")
 
         # Collect weather for all cities
         # Note: Using asyncio.run for each city to avoid blocking
@@ -97,6 +100,10 @@ def register_weather_collection_job(scheduler):
 
     Args:
         scheduler: SchedulerService instance
+
+    Note:
+        Only collects weather for cities favorited by users.
+        This optimizes API usage for free tier (60 calls/min, 1000 calls/day).
     """
     # Run every hour at minute 5
     # This avoids running exactly on the hour when other jobs might run
@@ -106,4 +113,4 @@ def register_weather_collection_job(scheduler):
         job_id="weather_collection",
         minute=5
     )
-    logger.info("Registered weather collection job (runs hourly at :05)")
+    logger.info("Registered weather collection job (runs hourly at :05, collects favorite cities only)")

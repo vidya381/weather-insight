@@ -205,6 +205,61 @@ class DailyAggregateResponse(BaseModel):
         }
 
 
+class ComparisonCityData(BaseModel):
+    """Simplified weather data for city comparison"""
+    city: str
+    country: str
+    temperature: float = Field(..., description="Temperature in Celsius")
+    feels_like: float = Field(..., description="Feels like temperature in Celsius")
+    humidity: int = Field(..., description="Humidity percentage")
+    pressure: int = Field(..., description="Atmospheric pressure in hPa")
+    weather_main: str = Field(..., description="Weather condition (e.g., Clear, Clouds)")
+    weather_description: str = Field(..., description="Weather description")
+    wind_speed: float = Field(..., description="Wind speed in m/s")
+    timestamp: int = Field(..., description="Data calculation time (Unix timestamp)")
+
+
+class CityComparisonResponse(BaseModel):
+    """Response model for comparing multiple cities"""
+    cities: list[ComparisonCityData]
+    total: int = Field(..., description="Number of cities in comparison")
+    timestamp: int = Field(..., description="Comparison timestamp (Unix)")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "cities": [
+                    {
+                        "city": "London",
+                        "country": "GB",
+                        "temperature": 15.5,
+                        "feels_like": 14.2,
+                        "humidity": 72,
+                        "pressure": 1013,
+                        "weather_main": "Clouds",
+                        "weather_description": "few clouds",
+                        "wind_speed": 5.2,
+                        "timestamp": 1706400000
+                    },
+                    {
+                        "city": "Tokyo",
+                        "country": "JP",
+                        "temperature": 8.3,
+                        "feels_like": 6.1,
+                        "humidity": 65,
+                        "pressure": 1020,
+                        "weather_main": "Clear",
+                        "weather_description": "clear sky",
+                        "wind_speed": 3.5,
+                        "timestamp": 1706400000
+                    }
+                ],
+                "total": 2,
+                "timestamp": 1706400000
+            }
+        }
+
+
 class ErrorResponse(BaseModel):
     """Error response model"""
     error: str

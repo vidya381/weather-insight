@@ -121,3 +121,25 @@ class FavoriteCityRepository:
         ).count()
 
         return count
+
+    @staticmethod
+    def get_all_favorited_cities(db: Session) -> List[City]:
+        """
+        Get all cities that are favorited by at least one user
+
+        This is useful for optimizing weather data collection to only
+        fetch data for cities that users actually care about.
+
+        Args:
+            db: Database session
+
+        Returns:
+            List of unique City objects that have at least one favorite
+        """
+        # Get distinct cities that are favorited
+        cities = db.query(City).join(
+            FavoriteCity,
+            City.id == FavoriteCity.city_id
+        ).distinct().all()
+
+        return cities
