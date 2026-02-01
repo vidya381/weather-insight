@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useDebounce } from '../hooks/useDebounce';
 import { citiesAPI } from '../api/cities';
 import './CitySearch.css';
 
@@ -8,16 +9,19 @@ export default function CitySearch({ onCitySelect }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showResults, setShowResults] = useState(false);
+  const debouncedQuery = useDebounce(query, 400);
 
-  const handleSearch = async (searchQuery) => {
-    setQuery(searchQuery);
-
-    if (searchQuery.length < 2) {
+  useEffect(() => {
+    if (debouncedQuery.length < 2) {
       setResults([]);
       setShowResults(false);
       return;
     }
 
+    handleSearch(debouncedQuery);
+  }, [debouncedQuery]);
+
+  const handleSearch = async (searchQuery) => {
     setLoading(true);
     setError(null);
     try {
@@ -46,7 +50,7 @@ export default function CitySearch({ onCitySelect }) {
         type="text"
         placeholder="Search for a city..."
         value={query}
-        onChange={(e) => handleSearch(e.target.value)}
+        onChange={(e) => setQuery(e.target.value)}
         onBlur={() => setTimeout(() => setShowResults(false), 200)}
         onFocus={() => query.length >= 2 && setShowResults(true)}
         className="search-input"

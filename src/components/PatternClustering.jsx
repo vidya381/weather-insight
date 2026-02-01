@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { mlAPI } from '../api/ml';
 import Spinner from './Spinner';
 import './MLInsights.css';
 
-export default function PatternClustering({ cityName }) {
+function PatternClustering({ cityName }) {
   const [patterns, setPatterns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -154,3 +154,5 @@ export default function PatternClustering({ cityName }) {
     </div>
   );
 }
+
+export default memo(PatternClustering);

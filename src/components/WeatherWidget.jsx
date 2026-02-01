@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { weatherAPI } from '../api/weather';
 import { citiesAPI } from '../api/cities';
 import Skeleton from './Skeleton';
 import './WeatherWidget.css';
 
-export default function WeatherWidget({ city, onRemove, isFavorite }) {
+function WeatherWidget({ city, onRemove, isFavorite }) {
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -131,3 +131,5 @@ export default function WeatherWidget({ city, onRemove, isFavorite }) {
     </div>
   );
 }
+
+export default memo(WeatherWidget);

@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { mlAPI } from '../api/ml';
 import Spinner from './Spinner';
 import './MLInsights.css';
 
-export default function TrendAnalysis({ cityName }) {
+function TrendAnalysis({ cityName }) {
   const [trends, setTrends] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -167,3 +167,5 @@ export default function TrendAnalysis({ cityName }) {
     </div>
   );
 }
+
+export default memo(TrendAnalysis);
