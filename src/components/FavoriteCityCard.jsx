@@ -90,7 +90,7 @@ function FavoriteCityCard({ city, onRemove, onSelect }) {
 
       <div className="city-card-content">
         <div className="city-icon">
-          {getWeatherIcon(weather.weather.main, 52)}
+          {getWeatherIcon(weather.weather.main, 40)}
         </div>
 
         <div className="city-info">

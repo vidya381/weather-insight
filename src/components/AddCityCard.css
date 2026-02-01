@@ -1,11 +1,11 @@
 .add-city-card {
   flex-shrink: 0;
-  width: 280px;
-  min-height: 220px;
+  width: 200px;
+  min-height: 160px;
   background: transparent;
   border: 2px dashed #d1d5db;
-  border-radius: 20px;
-  padding: 1.75rem;
+  border-radius: 16px;
+  padding: 1.25rem;
   cursor: pointer;
   transition: all 0.15s;
   display: flex;
@@ -32,20 +32,20 @@ body.dark-mode .add-city-card:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   text-align: center;
 }
 
 .add-icon {
-  width: 60px;
-  height: 60px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   border: 2px solid #d1d5db;
   background: #f9fafb;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.25rem;
+  font-size: 1.875rem;
   font-weight: 300;
   color: #6b7280;
   transition: all 0.15s;
@@ -79,7 +79,7 @@ body.dark-mode .add-city-card:hover .add-icon {
 }
 
 .add-title {
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #111827;
   margin: 0;
@@ -90,7 +90,7 @@ body.dark-mode .add-title {
 }
 
 .add-subtitle {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: #6b7280;
   margin: 0;
 }
@@ -102,22 +102,22 @@ body.dark-mode .add-subtitle {
 /* Responsive */
 @media (max-width: 640px) {
   .add-city-card {
-    width: 220px;
-    min-height: 180px;
-    padding: 1.25rem;
+    width: 180px;
+    min-height: 150px;
+    padding: 1rem;
   }
 
   .add-icon {
-    width: 48px;
-    height: 48px;
-    font-size: 1.75rem;
+    width: 44px;
+    height: 44px;
+    font-size: 1.625rem;
   }
 
   .add-title {
-    font-size: 1rem;
+    font-size: 0.9375rem;
   }
 
   .add-subtitle {
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
   }
 }
