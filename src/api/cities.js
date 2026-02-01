@@ -2,9 +2,9 @@ import apiClient from './client';
 
 export const citiesAPI = {
   // Search cities
-  searchCities: async (query) => {
+  searchCities: async (query, limit = 30) => {
     const response = await apiClient.get('/api/cities/search', {
-      params: { q: query },
+      params: { q: query, limit },
     });
     return response.data;
   },

@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { citiesAPI } from '../api/cities';
 import CitySearch from '../components/CitySearch';
-import WeatherWidget from '../components/WeatherWidget';
+import HeroWeatherCard from '../components/HeroWeatherCard';
+import DailyForecast from '../components/DailyForecast';
+import FavoriteCityCard from '../components/FavoriteCityCard';
+import AddCityCard from '../components/AddCityCard';
 import ThemeToggle from '../components/ThemeToggle';
 import Spinner from '../components/Spinner';
 import './Dashboard.css';
@@ -12,8 +15,11 @@ export default function Dashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
+  const [selectedCity, setSelectedCity] = useState(null);
+  const [showSearch, setShowSearch] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const searchSectionRef = useRef(null);
 
   useEffect(() => {
     loadFavorites();
@@ -25,6 +31,10 @@ export default function Dashboard() {
     try {
       const data = await citiesAPI.getFavorites();
       setFavorites(data);
+      // Set first city as selected hero city
+      if (data.length > 0 && !selectedCity) {
+        setSelectedCity(data[0]);
+      }
     } catch (err) {
       console.error('Failed to load favorites:', err);
       setError('Failed to load your favorite cities. Please try again.');
@@ -41,14 +51,33 @@ export default function Dashboard() {
   const handleCitySelect = async (city) => {
     try {
       await citiesAPI.addFavorite(city.id);
-      loadFavorites();
+      await loadFavorites();
+      setShowSearch(false);
     } catch (error) {
       console.error('Failed to add favorite:', error);
     }
   };
 
-  const handleRemoveFavorite = () => {
-    loadFavorites();
+  const handleRemoveFavorite = async () => {
+    await loadFavorites();
+    // If the removed city was the selected one, select the first available
+    if (favorites.length > 0) {
+      setSelectedCity(favorites[0]);
+    } else {
+      setSelectedCity(null);
+    }
+  };
+
+  const handleCityCardSelect = (city) => {
+    setSelectedCity(city);
+  };
+
+  const handleAddCityClick = () => {
+    setShowSearch(true);
+    // Scroll to search section
+    setTimeout(() => {
+      searchSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
   };
 
   return (
@@ -74,45 +103,86 @@ export default function Dashboard() {
 
       <main className="dashboard-main">
         <div className="dashboard-content">
-          <div className="search-section">
-            <h2>Search for a city</h2>
-            <CitySearch onCitySelect={handleCitySelect} />
-          </div>
+          {/* Search Section - conditionally shown */}
+          {showSearch && (
+            <div className="search-section" ref={searchSectionRef}>
+              <div className="search-header">
+                <h2>Search for a city</h2>
+                <button
+                  className="close-search-btn"
+                  onClick={() => setShowSearch(false)}
+                  title="Close search"
+                >
+                  ×
+                </button>
+              </div>
+              <CitySearch onCitySelect={handleCitySelect} />
+            </div>
+          )}
 
-          <div className="favorites-section">
-            <h2>Your Favorite Cities</h2>
+          {/* Hero Section */}
+          {loading && (
+            <div className="hero-section">
+              <Spinner text="Loading weather data..." />
+            </div>
+          )}
 
-            {loading && <Spinner text="Loading your favorite cities..." />}
-
-            {!loading && error && (
+          {!loading && error && (
+            <div className="hero-section">
               <div className="error-message">
                 <p>{error}</p>
                 <button onClick={loadFavorites} className="retry-btn">
                   Retry
                 </button>
               </div>
-            )}
+            </div>
+          )}
 
-            {!loading && !error && favorites.length === 0 && (
+          {!loading && !error && favorites.length === 0 && (
+            <div className="hero-section">
               <div className="empty-message">
+                <h3>Welcome to WeatherInsight</h3>
                 <p>No favorite cities yet.</p>
-                <p className="empty-hint">Search for a city above to add it to your favorites.</p>
+                <p className="empty-hint">Click the button below to add your first city.</p>
+                <button
+                  className="btn-primary"
+                  onClick={handleAddCityClick}
+                  style={{ marginTop: '1rem' }}
+                >
+                  Add Your First City
+                </button>
               </div>
-            )}
+            </div>
+          )}
 
-            {!loading && !error && favorites.length > 0 && (
-              <div className="weather-grid">
+          {!loading && !error && selectedCity && (
+            <div className="hero-section">
+              <HeroWeatherCard city={selectedCity} />
+            </div>
+          )}
+
+          {/* Daily Forecast Section */}
+          {!loading && !error && selectedCity && (
+            <DailyForecast city={selectedCity} />
+          )}
+
+          {/* Favorites Section - Horizontal Scroll */}
+          {!loading && !error && favorites.length > 0 && (
+            <div className="favorites-section">
+              <h2>Favorite Cities</h2>
+              <div className="favorites-scroll">
                 {favorites.map((city) => (
-                  <WeatherWidget
+                  <FavoriteCityCard
                     key={city.id}
                     city={city}
-                    isFavorite={true}
                     onRemove={handleRemoveFavorite}
+                    onSelect={handleCityCardSelect}
                   />
                 ))}
+                <AddCityCard onClick={handleAddCityClick} />
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </main>
     </div>

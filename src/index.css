@@ -15,8 +15,8 @@ body {
 }
 
 body.dark-mode {
-  background: #0D0D0D;
-  color: #E1E1E6;
+  background: #1e2029;
+  color: #E8E8ED;
 }
 
 #root {
@@ -42,9 +42,9 @@ body.dark-mode {
 }
 
 body.dark-mode ::-webkit-scrollbar-thumb {
-  background: #3A3A3E;
+  background: rgba(88, 94, 113, 0.6);
 }
 
 body.dark-mode ::-webkit-scrollbar-thumb:hover {
-  background: #48484C;
+  background: rgba(88, 94, 113, 0.8);
 }

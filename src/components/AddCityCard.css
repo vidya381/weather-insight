@@ -1,0 +1,123 @@
+.add-city-card {
+  flex-shrink: 0;
+  width: 200px;
+  min-height: 160px;
+  background: transparent;
+  border: 2px dashed #d1d5db;
+  border-radius: 16px;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-city-card:hover {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.03);
+  transform: translateY(-4px);
+}
+
+body.dark-mode .add-city-card {
+  border-color: rgba(88, 94, 113, 0.6);
+}
+
+body.dark-mode .add-city-card:hover {
+  border-color: #60A5FA;
+  background: rgba(96, 165, 250, 0.08);
+}
+
+.add-city-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.add-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #d1d5db;
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.875rem;
+  font-weight: 300;
+  color: #6b7280;
+  transition: all 0.15s;
+  line-height: 1;
+  padding-bottom: 0.125rem;
+}
+
+.add-city-card:hover .add-icon {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  color: #3b82f6;
+  transform: scale(1.05);
+}
+
+body.dark-mode .add-icon {
+  border-color: rgba(88, 94, 113, 0.6);
+  background: rgba(42, 47, 60, 0.8);
+  color: #9CA3AF;
+}
+
+body.dark-mode .add-city-card:hover .add-icon {
+  border-color: #60A5FA;
+  background: rgba(96, 165, 250, 0.15);
+  color: #60A5FA;
+}
+
+.add-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.add-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+body.dark-mode .add-title {
+  color: #E1E1E6;
+}
+
+.add-subtitle {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+body.dark-mode .add-subtitle {
+  color: #8B8B8F;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .add-city-card {
+    width: 180px;
+    min-height: 150px;
+    padding: 1rem;
+  }
+
+  .add-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 1.625rem;
+  }
+
+  .add-title {
+    font-size: 0.9375rem;
+  }
+
+  .add-subtitle {
+    font-size: 0.75rem;
+  }
+}
