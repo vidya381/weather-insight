@@ -23,7 +23,9 @@ from app.schemas.weather import (
     WeatherHistoryResponse,
     WeatherHistoryItem,
     DailyAggregateResponse,
-    DailyAggregateItem
+    DailyAggregateItem,
+    CityComparisonResponse,
+    ComparisonCityData
 )
 
 router = APIRouter(prefix="/api/weather", tags=["Weather"])
@@ -350,4 +352,100 @@ async def get_daily_weather_aggregates(
         raise HTTPException(
             status_code=500,
             detail=f"Failed to retrieve daily aggregates: {str(e)}"
+        )
+
+
+@router.get(
+    "/compare",
+    response_model=CityComparisonResponse,
+    responses={
+        400: {"model": ErrorResponse, "description": "Invalid request"},
+        500: {"model": ErrorResponse, "description": "API error"}
+    }
+)
+async def compare_cities(
+    cities: str = Query(..., description="Comma-separated city names (e.g., 'London,Tokyo,New York')"),
+    db: Session = Depends(get_db)
+):
+    """
+    Compare current weather across multiple cities
+
+    - **cities**: Comma-separated list of city names (max 10 cities)
+
+    Returns simplified weather data for easy comparison
+    """
+    try:
+        # Parse city names
+        city_list = [city.strip() for city in cities.split(',') if city.strip()]
+
+        if not city_list:
+            raise HTTPException(
+                status_code=400,
+                detail="At least one city name is required"
+            )
+
+        if len(city_list) > 10:
+            raise HTTPException(
+                status_code=400,
+                detail="Maximum 10 cities allowed for comparison"
+            )
+
+        # Fetch weather data for each city
+        comparison_data = []
+        errors = []
+
+        for city_name in city_list:
+            try:
+                # Fetch current weather (will also save to database)
+                raw_data = await weather_service.get_current_weather(city_name, db)
+
+                # Extract comparison data
+                main = raw_data.get("main", {})
+                weather = raw_data.get("weather", [{}])[0]
+                wind = raw_data.get("wind", {})
+
+                comparison_data.append(ComparisonCityData(
+                    city=raw_data.get("name"),
+                    country=raw_data.get("sys", {}).get("country"),
+                    temperature=main.get("temp"),
+                    feels_like=main.get("feels_like"),
+                    humidity=main.get("humidity"),
+                    pressure=main.get("pressure"),
+                    weather_main=weather.get("main"),
+                    weather_description=weather.get("description"),
+                    wind_speed=wind.get("speed"),
+                    timestamp=raw_data.get("dt")
+                ))
+
+            except httpx.HTTPStatusError as e:
+                if e.response.status_code == 404:
+                    errors.append(f"City '{city_name}' not found")
+                else:
+                    errors.append(f"Error fetching {city_name}: {str(e)}")
+            except Exception as e:
+                errors.append(f"Error processing {city_name}: {str(e)}")
+
+        # If no cities were successfully fetched
+        if not comparison_data:
+            error_detail = "; ".join(errors) if errors else "Failed to fetch weather data for any city"
+            raise HTTPException(
+                status_code=404,
+                detail=error_detail
+            )
+
+        # Return comparison results
+        from time import time
+        return CityComparisonResponse(
+            cities=comparison_data,
+            total=len(comparison_data),
+            timestamp=int(time())
+        )
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to compare cities: {str(e)}"
         )
