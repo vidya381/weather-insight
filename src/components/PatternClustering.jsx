@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { mlAPI } from '../api/ml';
+import Spinner from './Spinner';
 import './MLInsights.css';
 
 export default function PatternClustering({ cityName }) {
@@ -37,7 +38,11 @@ export default function PatternClustering({ cityName }) {
   };
 
   if (loading) {
-    return <div className="ml-loading">Loading patterns...</div>;
+    return (
+      <div className="ml-section">
+        <Spinner text="Clustering weather patterns..." />
+      </div>
+    );
   }
 
   if (error) {

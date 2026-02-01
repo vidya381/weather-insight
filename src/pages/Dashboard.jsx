@@ -5,6 +5,7 @@ import { citiesAPI } from '../api/cities';
 import CitySearch from '../components/CitySearch';
 import WeatherWidget from '../components/WeatherWidget';
 import ThemeToggle from '../components/ThemeToggle';
+import Spinner from '../components/Spinner';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -77,7 +78,7 @@ export default function Dashboard() {
           <div className="favorites-section">
             <h2>Your Favorite Cities</h2>
 
-            {loading && <div className="loading-message">Loading favorites...</div>}
+            {loading && <Spinner text="Loading your favorite cities..." />}
 
             {!loading && favorites.length === 0 && (
               <div className="empty-message">

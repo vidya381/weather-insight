@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { mlAPI } from '../api/ml';
+import Spinner from './Spinner';
 import './MLInsights.css';
 
 export default function AnomalyDetection({ cityName }) {
@@ -45,7 +46,11 @@ export default function AnomalyDetection({ cityName }) {
   };
 
   if (loading) {
-    return <div className="ml-loading">Loading anomalies...</div>;
+    return (
+      <div className="ml-section">
+        <Spinner text="Analyzing temperature anomalies..." />
+      </div>
+    );
   }
 
   if (error) {

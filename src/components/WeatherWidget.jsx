@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { weatherAPI } from '../api/weather';
 import { citiesAPI } from '../api/cities';
+import Skeleton from './Skeleton';
 import './WeatherWidget.css';
 
 export default function WeatherWidget({ city, onRemove, isFavorite }) {
@@ -48,8 +49,24 @@ export default function WeatherWidget({ city, onRemove, isFavorite }) {
 
   if (loading) {
     return (
-      <div className="weather-widget loading">
-        <div className="loading-text">Loading weather...</div>
+      <div className="weather-widget">
+        <div className="widget-header">
+          <div style={{ flex: 1 }}>
+            <Skeleton width="60%" height="1.5rem" />
+            <Skeleton width="40%" height="0.875rem" style={{ marginTop: '0.5rem' }} />
+          </div>
+        </div>
+        <div className="widget-content">
+          <div className="temp-display">
+            <Skeleton width="120px" height="4rem" />
+          </div>
+          <div className="weather-details">
+            <Skeleton variant="rect" height="3rem" />
+            <Skeleton variant="rect" height="3rem" />
+            <Skeleton variant="rect" height="3rem" />
+            <Skeleton variant="rect" height="3rem" />
+          </div>
+        </div>
       </div>
     );
   }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { mlAPI } from '../api/ml';
+import Spinner from './Spinner';
 import './MLInsights.css';
 
 export default function TrendAnalysis({ cityName }) {
@@ -45,7 +46,11 @@ export default function TrendAnalysis({ cityName }) {
   };
 
   if (loading) {
-    return <div className="ml-loading">Loading trends...</div>;
+    return (
+      <div className="ml-section">
+        <Spinner text="Analyzing temperature trends..." />
+      </div>
+    );
   }
 
   if (error) {
