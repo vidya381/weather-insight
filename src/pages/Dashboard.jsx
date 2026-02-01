@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { citiesAPI } from '../api/cities';
 import CitySearch from '../components/CitySearch';
 import HeroWeatherCard from '../components/HeroWeatherCard';
+import DailyForecast from '../components/DailyForecast';
 import FavoriteCityCard from '../components/FavoriteCityCard';
 import AddCityCard from '../components/AddCityCard';
 import ThemeToggle from '../components/ThemeToggle';
@@ -158,6 +159,11 @@ export default function Dashboard() {
             <div className="hero-section">
               <HeroWeatherCard city={selectedCity} />
             </div>
+          )}
+
+          {/* Daily Forecast Section */}
+          {!loading && !error && selectedCity && (
+            <DailyForecast city={selectedCity} />
           )}
 
           {/* Favorites Section - Horizontal Scroll */}
