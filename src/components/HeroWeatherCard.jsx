@@ -134,7 +134,7 @@ function HeroWeatherCard({ city }) {
       <div className="hero-main">
         <div className="hero-left-group">
           <div className="hero-icon-wrapper">
-            {getWeatherIcon(weather.weather.main, 100)}
+            {getWeatherIcon(weather.weather.main, 90)}
           </div>
 
           <div className="hero-info">
@@ -184,10 +184,10 @@ function HeroWeatherCard({ city }) {
 
             return (
               <div key={index} className="hourly-item">
-                {showDayLabel && <span className="hourly-day">{currentDay}</span>}
+                <span className="hourly-day">{showDayLabel ? currentDay : '\u00A0'}</span>
                 <span className="hourly-time">{formatTime(item.datetime)}</span>
                 <div className="hourly-icon">
-                  {getSmallWeatherIcon(item.weather.main, 40)}
+                  {getSmallWeatherIcon(item.weather.main, 32)}
                 </div>
                 <span className="hourly-temp">{formatTemp(item.temperature)}</span>
               </div>

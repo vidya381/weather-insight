@@ -2,7 +2,7 @@
   background: #ffffff;
   border: 1px solid #e5e5e5;
   border-radius: 24px;
-  padding: 2.5rem;
+  padding: 2rem;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   transition: all 0.15s;
 }
@@ -28,7 +28,7 @@ body.dark-mode .hero-weather-card {
   align-items: center;
   justify-content: space-between;
   gap: 2rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.75rem;
 }
 
 .hero-left-group {
@@ -193,9 +193,9 @@ body.dark-mode .stat-label {
 /* Hourly Forecast Strip */
 .hourly-forecast {
   display: flex;
-  gap: 1rem;
+  gap: 0.875rem;
   overflow-x: auto;
-  padding: 0.75rem 0 1rem 0;
+  padding: 0.5rem 0 0.75rem 0;
   scrollbar-width: thin;
   scrollbar-color: rgba(155, 155, 155, 0.3) transparent;
 }
@@ -222,13 +222,13 @@ body.dark-mode .stat-label {
   flex-shrink: 0;
   background: rgba(245, 245, 245, 0.7);
   border: 1px solid #e5e5e5;
-  border-radius: 18px;
-  padding: 1.25rem 1rem;
+  border-radius: 16px;
+  padding: 0.875rem 0.75rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.625rem;
-  min-width: 100px;
+  gap: 0.5rem;
+  min-width: 85px;
   transition: all 0.15s;
 }
 
@@ -251,11 +251,13 @@ body.dark-mode .hourly-item:hover {
 }
 
 .hourly-day {
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 700;
   color: #3b82f6;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  min-height: 1rem;
+  line-height: 1rem;
 }
 
 body.dark-mode .hourly-day {
@@ -263,7 +265,7 @@ body.dark-mode .hourly-day {
 }
 
 .hourly-time {
-  font-size: 0.9rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: #6b7280;
 }
@@ -276,7 +278,7 @@ body.dark-mode .hourly-time {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0.25rem 0;
+  margin: 0.125rem 0;
 }
 
 .hourly-icon .weather-icon {
@@ -290,7 +292,7 @@ body.dark-mode .hourly-icon .weather-icon {
 }
 
 .hourly-temp {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 600;
   color: #111827;
 }
@@ -375,12 +377,16 @@ body.dark-mode .hourly-temp {
   }
 
   .hourly-item {
-    min-width: 90px;
-    padding: 1.125rem 0.875rem;
+    min-width: 80px;
+    padding: 0.875rem 0.75rem;
   }
 
   .hourly-temp {
-    font-size: 1.125rem;
+    font-size: 1rem;
+  }
+
+  .hourly-time {
+    font-size: 0.75rem;
   }
 }
 
