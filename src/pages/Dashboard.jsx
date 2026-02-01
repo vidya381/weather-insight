@@ -51,6 +51,12 @@ export default function Dashboard() {
         <div className="header-content">
           <h1>WeatherInsight</h1>
           <div className="header-actions">
+            <button
+              onClick={() => navigate('/ml-insights')}
+              className="btn-secondary"
+            >
+              ML Insights
+            </button>
             <span className="user-name">{user?.username}</span>
             <button onClick={handleLogout} className="btn-secondary">
               Logout
