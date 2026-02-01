@@ -154,6 +154,44 @@ body.dark-mode .empty-message {
   color: #9ca3af;
 }
 
+.error-message {
+  text-align: center;
+  padding: 2rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+}
+
+body.dark-mode .error-message {
+  background: #2A1515;
+  border-color: #4A2020;
+}
+
+.error-message p {
+  margin: 0 0 1rem 0;
+  color: #dc2626;
+}
+
+body.dark-mode .error-message p {
+  color: #F87171;
+}
+
+.retry-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: #3b82f6;
+  background: transparent;
+  border: 1px solid #3b82f6;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.retry-btn:hover {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
 body.dark-mode .empty-hint {
   color: #6B6B6F;
 }

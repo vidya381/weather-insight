@@ -46,7 +46,16 @@ export default function PatternClustering({ cityName }) {
   }
 
   if (error) {
-    return <div className="ml-error">{error}</div>;
+    return (
+      <div className="ml-section">
+        <div className="ml-error">
+          <p>{error}</p>
+          <button onClick={loadPatterns} className="retry-btn">
+            Retry
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (

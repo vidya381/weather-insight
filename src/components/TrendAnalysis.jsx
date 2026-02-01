@@ -54,7 +54,16 @@ export default function TrendAnalysis({ cityName }) {
   }
 
   if (error) {
-    return <div className="ml-error">{error}</div>;
+    return (
+      <div className="ml-section">
+        <div className="ml-error">
+          <p>{error}</p>
+          <button onClick={loadTrends} className="retry-btn">
+            Retry
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (!trends) return null;

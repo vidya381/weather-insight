@@ -54,7 +54,16 @@ export default function AnomalyDetection({ cityName }) {
   }
 
   if (error) {
-    return <div className="ml-error">{error}</div>;
+    return (
+      <div className="ml-section">
+        <div className="ml-error">
+          <p>{error}</p>
+          <button onClick={loadAnomalies} className="retry-btn">
+            Retry
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (

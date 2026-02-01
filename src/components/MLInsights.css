@@ -64,10 +64,22 @@ body.dark-mode .ml-loading {
 
 .ml-error {
   color: #dc2626;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
 body.dark-mode .ml-error {
   color: #F87171;
+}
+
+.ml-error p {
+  margin: 0;
+}
+
+.ml-error .retry-btn {
+  margin-top: 0.5rem;
 }
 
 .ml-empty {

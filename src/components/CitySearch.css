@@ -67,6 +67,17 @@ body.dark-mode .search-empty {
   color: #8B8B8F;
 }
 
+.search-error {
+  padding: 1rem;
+  text-align: center;
+  color: #dc2626;
+  font-size: 0.875rem;
+}
+
+body.dark-mode .search-error {
+  color: #F87171;
+}
+
 .search-result-item {
   padding: 0.75rem 1rem;
   cursor: pointer;

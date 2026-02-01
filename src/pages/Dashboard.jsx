@@ -13,17 +13,21 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     loadFavorites();
   }, []);
 
   const loadFavorites = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const data = await citiesAPI.getFavorites();
       setFavorites(data);
-    } catch (error) {
-      console.error('Failed to load favorites:', error);
+    } catch (err) {
+      console.error('Failed to load favorites:', err);
+      setError('Failed to load your favorite cities. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -80,14 +84,23 @@ export default function Dashboard() {
 
             {loading && <Spinner text="Loading your favorite cities..." />}
 
-            {!loading && favorites.length === 0 && (
+            {!loading && error && (
+              <div className="error-message">
+                <p>{error}</p>
+                <button onClick={loadFavorites} className="retry-btn">
+                  Retry
+                </button>
+              </div>
+            )}
+
+            {!loading && !error && favorites.length === 0 && (
               <div className="empty-message">
                 <p>No favorite cities yet.</p>
                 <p className="empty-hint">Search for a city above to add it to your favorites.</p>
               </div>
             )}
 
-            {!loading && favorites.length > 0 && (
+            {!loading && !error && favorites.length > 0 && (
               <div className="weather-grid">
                 {favorites.map((city) => (
                   <WeatherWidget
