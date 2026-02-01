@@ -15,7 +15,8 @@ body {
 }
 
 body.dark-mode {
-  background: #16161A;
+  background: #0D0D0D;
+  color: #E1E1E6;
 }
 
 #root {

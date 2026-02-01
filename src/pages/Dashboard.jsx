@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { citiesAPI } from '../api/cities';
 import CitySearch from '../components/CitySearch';
 import WeatherWidget from '../components/WeatherWidget';
+import ThemeToggle from '../components/ThemeToggle';
+import Spinner from '../components/Spinner';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -11,17 +13,21 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     loadFavorites();
   }, []);
 
   const loadFavorites = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const data = await citiesAPI.getFavorites();
       setFavorites(data);
-    } catch (error) {
-      console.error('Failed to load favorites:', error);
+    } catch (err) {
+      console.error('Failed to load favorites:', err);
+      setError('Failed to load your favorite cities. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -58,6 +64,7 @@ export default function Dashboard() {
               ML Insights
             </button>
             <span className="user-name">{user?.username}</span>
+            <ThemeToggle />
             <button onClick={handleLogout} className="btn-secondary">
               Logout
             </button>
@@ -75,16 +82,25 @@ export default function Dashboard() {
           <div className="favorites-section">
             <h2>Your Favorite Cities</h2>
 
-            {loading && <div className="loading-message">Loading favorites...</div>}
+            {loading && <Spinner text="Loading your favorite cities..." />}
 
-            {!loading && favorites.length === 0 && (
+            {!loading && error && (
+              <div className="error-message">
+                <p>{error}</p>
+                <button onClick={loadFavorites} className="retry-btn">
+                  Retry
+                </button>
+              </div>
+            )}
+
+            {!loading && !error && favorites.length === 0 && (
               <div className="empty-message">
                 <p>No favorite cities yet.</p>
                 <p className="empty-hint">Search for a city above to add it to your favorites.</p>
               </div>
             )}
 
-            {!loading && favorites.length > 0 && (
+            {!loading && !error && favorites.length > 0 && (
               <div className="weather-grid">
                 {favorites.map((city) => (
                   <WeatherWidget

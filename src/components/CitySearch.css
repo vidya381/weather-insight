@@ -15,6 +15,12 @@
   transition: border-color 0.15s;
 }
 
+body.dark-mode .search-input {
+  color: #E1E1E6;
+  background-color: #1A1A1A;
+  border-color: #2A2A2A;
+}
+
 .search-input:focus {
   outline: none;
   border-color: #3b82f6;
@@ -22,6 +28,10 @@
 
 .search-input::placeholder {
   color: #9ca3af;
+}
+
+body.dark-mode .search-input::placeholder {
+  color: #6B6B6F;
 }
 
 .search-results {
@@ -38,12 +48,34 @@
   z-index: 10;
 }
 
+body.dark-mode .search-results {
+  background: #1A1A1A;
+  border-color: #2A2A2A;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
 .search-loading,
 .search-empty {
   padding: 1rem;
   text-align: center;
   color: #6b7280;
   font-size: 0.875rem;
+}
+
+body.dark-mode .search-loading,
+body.dark-mode .search-empty {
+  color: #8B8B8F;
+}
+
+.search-error {
+  padding: 1rem;
+  text-align: center;
+  color: #dc2626;
+  font-size: 0.875rem;
+}
+
+body.dark-mode .search-error {
+  color: #F87171;
 }
 
 .search-result-item {
@@ -56,6 +88,10 @@
   transition: background-color 0.15s;
 }
 
+body.dark-mode .search-result-item {
+  border-bottom-color: #252525;
+}
+
 .search-result-item:last-child {
   border-bottom: none;
 }
@@ -64,10 +100,18 @@
   background-color: #f9fafb;
 }
 
+body.dark-mode .search-result-item:hover {
+  background-color: #252525;
+}
+
 .city-name {
   font-weight: 500;
   color: #111827;
   font-size: 0.95rem;
+}
+
+body.dark-mode .city-name {
+  color: #E1E1E6;
 }
 
 .city-country {
@@ -76,4 +120,43 @@
   padding: 0.25rem 0.5rem;
   background-color: #f3f4f6;
   border-radius: 4px;
+}
+
+body.dark-mode .city-country {
+  color: #8B8B8F;
+  background-color: #252525;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .city-search {
+    max-width: 100%;
+  }
+
+  .search-input {
+    padding: 0.875rem 1rem;
+    font-size: 1rem; /* Prevent zoom on iOS */
+  }
+
+  .search-results {
+    max-height: 250px;
+  }
+
+  .search-result-item {
+    padding: 1rem;
+  }
+
+  .city-name {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .search-input {
+    padding: 0.75rem 0.875rem;
+  }
+
+  .search-result-item {
+    padding: 0.875rem;
+  }
 }

@@ -1,9 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { weatherAPI } from '../api/weather';
 import { citiesAPI } from '../api/cities';
+import Skeleton from './Skeleton';
+import {
+  WiDaySunny, WiCloudy, WiRain, WiSnow, WiThunderstorm,
+  WiFog, WiDayCloudy, WiNightClear, WiNightCloudy
+} from 'react-icons/wi';
 import './WeatherWidget.css';
 
-export default function WeatherWidget({ city, onRemove, isFavorite }) {
+const getWeatherIcon = (condition, size = 80) => {
+  const iconProps = { size, className: 'weather-icon' };
+  const cond = condition?.toLowerCase() || '';
+
+  if (cond.includes('clear')) return <WiDaySunny {...iconProps} />;
+  if (cond.includes('cloud')) return <WiCloudy {...iconProps} />;
+  if (cond.includes('rain') || cond.includes('drizzle')) return <WiRain {...iconProps} />;
+  if (cond.includes('snow')) return <WiSnow {...iconProps} />;
+  if (cond.includes('thunder') || cond.includes('storm')) return <WiThunderstorm {...iconProps} />;
+  if (cond.includes('fog') || cond.includes('mist') || cond.includes('haze')) return <WiFog {...iconProps} />;
+  return <WiDayCloudy {...iconProps} />;
+};
+
+function WeatherWidget({ city, onRemove, isFavorite }) {
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -48,8 +66,24 @@ export default function WeatherWidget({ city, onRemove, isFavorite }) {
 
   if (loading) {
     return (
-      <div className="weather-widget loading">
-        <div className="loading-text">Loading weather...</div>
+      <div className="weather-widget">
+        <div className="widget-header">
+          <div style={{ flex: 1 }}>
+            <Skeleton width="60%" height="1.5rem" />
+            <Skeleton width="40%" height="0.875rem" style={{ marginTop: '0.5rem' }} />
+          </div>
+        </div>
+        <div className="widget-content">
+          <div className="temp-display">
+            <Skeleton width="120px" height="4rem" />
+          </div>
+          <div className="weather-details">
+            <Skeleton variant="rect" height="3rem" />
+            <Skeleton variant="rect" height="3rem" />
+            <Skeleton variant="rect" height="3rem" />
+            <Skeleton variant="rect" height="3rem" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -66,6 +100,16 @@ export default function WeatherWidget({ city, onRemove, isFavorite }) {
   }
 
   if (!weather) return null;
+
+  // Color-code temperature
+  const getTemperatureClass = (temp) => {
+    if (temp >= 30) return 'hot';
+    if (temp >= 20) return 'warm';
+    if (temp >= 10) return 'cool';
+    return 'cold';
+  };
+
+  const tempClass = getTemperatureClass(weather.temperature);
 
   return (
     <div className="weather-widget">
@@ -87,9 +131,13 @@ export default function WeatherWidget({ city, onRemove, isFavorite }) {
       </div>
 
       <div className="widget-content">
-        <div className="temp-display">
-          <span className="temp-value">{Math.round(weather.temperature)}°</span>
-          <span className="temp-unit">C</span>
+        <div className="temp-main">
+          <div className="weather-icon-wrapper">
+            {getWeatherIcon(weather.weather.main)}
+          </div>
+          <div className="temp-display">
+            <span className={`temp-value ${tempClass}`}>{Math.round(weather.temperature)}°</span>
+          </div>
         </div>
 
         <div className="weather-details">
@@ -114,3 +162,5 @@ export default function WeatherWidget({ city, onRemove, isFavorite }) {
     </div>
   );
 }
+
+export default memo(WeatherWidget);

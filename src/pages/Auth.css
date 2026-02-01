@@ -5,6 +5,81 @@
   justify-content: center;
   background-color: #f5f5f5;
   padding: 1rem;
+  position: relative;
+}
+
+body.dark-mode .auth-container {
+  background-color: #0D0D0D;
+}
+
+.theme-toggle-auth {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .theme-toggle-auth {
+    top: 1rem;
+    right: 1rem;
+  }
+}
+
+body.dark-mode .auth-box {
+  background: #1A1A1A;
+  border-color: #2A2A2A;
+}
+
+body.dark-mode .auth-box h1 {
+  color: #E1E1E6;
+}
+
+body.dark-mode .auth-box h2 {
+  color: #8B8B8F;
+}
+
+body.dark-mode .error-message {
+  background-color: #2A1515;
+  border-color: #4A2020;
+  color: #F87171;
+}
+
+body.dark-mode .form-group label {
+  color: #C1C1C6;
+}
+
+body.dark-mode .form-group input {
+  color: #E1E1E6;
+  background-color: #1A1A1A;
+  border-color: #2A2A2A;
+}
+
+body.dark-mode .form-group input:focus {
+  border-color: #3B82F6;
+}
+
+body.dark-mode .form-group input:disabled {
+  background-color: #151515;
+}
+
+body.dark-mode .btn-primary {
+  background-color: #3B82F6;
+}
+
+body.dark-mode .btn-primary:hover:not(:disabled) {
+  background-color: #2563EB;
+}
+
+body.dark-mode .btn-primary:disabled {
+  background-color: #1E3A8A;
+}
+
+body.dark-mode .auth-footer {
+  color: #8B8B8F;
+}
+
+body.dark-mode .auth-footer a {
+  color: #3B82F6;
 }
 
 .auth-box {
@@ -12,8 +87,9 @@
   max-width: 400px;
   background: #ffffff;
   border: 1px solid #e5e5e5;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 2.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .auth-box h1 {
@@ -111,4 +187,43 @@
 
 .auth-footer a:hover {
   text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .auth-container {
+    padding: 1rem 0.75rem;
+  }
+
+  .auth-box {
+    padding: 2rem 1.5rem;
+  }
+
+  .auth-box h1 {
+    font-size: 1.5rem;
+  }
+
+  .auth-box h2 {
+    font-size: 0.875rem;
+  }
+
+  .form-group input {
+    padding: 0.75rem;
+    font-size: 1rem; /* Larger for better mobile UX */
+  }
+
+  .btn-primary {
+    padding: 0.875rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .auth-box {
+    padding: 1.5rem 1rem;
+  }
+
+  .auth-box h1 {
+    font-size: 1.375rem;
+  }
 }

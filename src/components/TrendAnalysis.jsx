@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useState, useEffect, memo } from 'react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { mlAPI } from '../api/ml';
+import Spinner from './Spinner';
 import './MLInsights.css';
 
-export default function TrendAnalysis({ cityName }) {
+function TrendAnalysis({ cityName }) {
   const [trends, setTrends] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,11 +46,24 @@ export default function TrendAnalysis({ cityName }) {
   };
 
   if (loading) {
-    return <div className="ml-loading">Loading trends...</div>;
+    return (
+      <div className="ml-section">
+        <Spinner text="Analyzing temperature trends..." />
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="ml-error">{error}</div>;
+    return (
+      <div className="ml-section">
+        <div className="ml-error">
+          <p>{error}</p>
+          <button onClick={loadTrends} className="retry-btn">
+            Retry
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (!trends) return null;
@@ -105,26 +119,35 @@ export default function TrendAnalysis({ cityName }) {
       {chartData.length > 0 && (
         <div className="trend-chart">
           <h4>7-Day Prediction</h4>
-          <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+          <ResponsiveContainer width="100%" height={280}>
+            <AreaChart data={chartData}>
+              <defs>
+                <linearGradient id="tempGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" opacity={0.3} />
               <XAxis dataKey="day" stroke="#6b7280" style={{ fontSize: '0.75rem' }} />
-              <YAxis stroke="#6b7280" style={{ fontSize: '0.75rem' }} />
+              <YAxis stroke="#6b7280" style={{ fontSize: '0.75rem' }} unit="°C" />
               <Tooltip
                 contentStyle={{
                   backgroundColor: '#ffffff',
                   border: '1px solid #e5e5e5',
-                  borderRadius: '6px',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
                 }}
               />
-              <Line
+              <Area
                 type="monotone"
                 dataKey="temperature"
                 stroke="#3b82f6"
-                strokeWidth={2}
-                dot={{ fill: '#3b82f6', r: 4 }}
+                strokeWidth={3}
+                fill="url(#tempGradient)"
+                dot={{ fill: '#3b82f6', r: 5, strokeWidth: 2, stroke: '#ffffff' }}
+                activeDot={{ r: 7 }}
               />
-            </LineChart>
+            </AreaChart>
           </ResponsiveContainer>
         </div>
       )}
@@ -153,3 +176,5 @@ export default function TrendAnalysis({ cityName }) {
     </div>
   );
 }
+
+export default memo(TrendAnalysis);

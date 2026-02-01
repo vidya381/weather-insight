@@ -9,6 +9,10 @@
   margin: 0;
 }
 
+body.dark-mode .ml-insights-header h2 {
+  color: #E1E1E6;
+}
+
 .city-selector {
   display: flex;
   align-items: center;
@@ -19,6 +23,10 @@
   font-size: 0.875rem;
   font-weight: 500;
   color: #374151;
+}
+
+body.dark-mode .city-selector label {
+  color: #C1C1C6;
 }
 
 .ml-insights-content {
@@ -43,6 +51,7 @@
   background-color: #2563eb;
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
   .ml-insights-header {
     flex-direction: column;
@@ -52,9 +61,32 @@
 
   .city-selector {
     width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .city-selector select {
-    flex: 1;
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .ml-insights-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .city-selector label {
+    font-size: 0.8rem;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .ml-insights-header h2 {
+    font-size: 1.25rem;
   }
 }

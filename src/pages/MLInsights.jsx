@@ -5,6 +5,8 @@ import { citiesAPI } from '../api/cities';
 import AnomalyDetection from '../components/AnomalyDetection';
 import TrendAnalysis from '../components/TrendAnalysis';
 import PatternClustering from '../components/PatternClustering';
+import ThemeToggle from '../components/ThemeToggle';
+import Spinner from '../components/Spinner';
 import './Dashboard.css';
 import './MLInsights.css';
 
@@ -51,6 +53,7 @@ export default function MLInsights() {
               Dashboard
             </button>
             <span className="user-name">{user?.username}</span>
+            <ThemeToggle />
             <button onClick={handleLogout} className="btn-secondary">
               Logout
             </button>
@@ -84,7 +87,7 @@ export default function MLInsights() {
             )}
           </div>
 
-          {loading && <div className="loading-message">Loading...</div>}
+          {loading && <Spinner text="Loading ML insights..." />}
 
           {!loading && favorites.length === 0 && (
             <div className="empty-message">
