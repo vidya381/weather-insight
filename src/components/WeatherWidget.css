@@ -1,0 +1,155 @@
+.weather-widget {
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 1.5rem;
+  min-width: 320px;
+}
+
+.weather-widget.loading,
+.weather-widget.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: #6b7280;
+}
+
+.loading-text {
+  font-size: 0.95rem;
+}
+
+.error-text {
+  font-size: 0.95rem;
+  color: #dc2626;
+  margin-bottom: 1rem;
+}
+
+.retry-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: #3b82f6;
+  background: transparent;
+  border: 1px solid #3b82f6;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.retry-btn:hover {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.city-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 0.25rem 0;
+}
+
+.weather-desc {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.fav-btn {
+  font-size: 1.5rem;
+  color: #d1d5db;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.fav-btn:hover {
+  color: #fbbf24;
+}
+
+.fav-btn.active {
+  color: #fbbf24;
+}
+
+.fav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.widget-content {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.temp-display {
+  display: flex;
+  align-items: flex-start;
+}
+
+.temp-value {
+  font-size: 4rem;
+  font-weight: 300;
+  color: #111827;
+  line-height: 1;
+}
+
+.temp-unit {
+  font-size: 1.5rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+  margin-left: 0.25rem;
+}
+
+.weather-details {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detail-label {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detail-value {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+@media (max-width: 640px) {
+  .weather-widget {
+    min-width: 100%;
+  }
+
+  .widget-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .weather-details {
+    width: 100%;
+  }
+}
