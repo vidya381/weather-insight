@@ -21,7 +21,8 @@ export default function PatternClustering({ cityName }) {
       const data = await mlAPI.getPatterns(cityName, days);
       setPatterns(data.patterns);
     } catch (err) {
-      setError('Failed to load patterns');
+      const message = err.response?.data?.detail || 'Failed to load patterns. Insufficient historical data.';
+      setError(message);
       console.error('Pattern load error:', err);
     } finally {
       setLoading(false);
@@ -72,8 +73,8 @@ export default function PatternClustering({ cityName }) {
                 >
                   Cluster {pattern.cluster_id}
                 </span>
-                <span className="pattern-date">
-                  {new Date(pattern.pattern_date).toLocaleDateString()}
+                <span className="pattern-count">
+                  {pattern.count} days
                 </span>
               </div>
 
@@ -82,7 +83,7 @@ export default function PatternClustering({ cityName }) {
                   <div className="char-item">
                     <span className="char-label">Avg Temp</span>
                     <span className="char-value">
-                      {pattern.characteristics.avg_temp?.toFixed(1)}°C
+                      {pattern.characteristics.avg_temperature?.toFixed(1)}°C
                     </span>
                   </div>
                   <div className="char-item">

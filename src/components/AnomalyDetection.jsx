@@ -21,7 +21,8 @@ export default function AnomalyDetection({ cityName }) {
       const data = await mlAPI.getAnomalies(cityName, days);
       setAnomalies(data.anomalies);
     } catch (err) {
-      setError('Failed to load anomalies');
+      const message = err.response?.data?.detail || 'Failed to load anomalies. Insufficient historical data.';
+      setError(message);
       console.error('Anomaly load error:', err);
     } finally {
       setLoading(false);
