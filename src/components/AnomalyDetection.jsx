@@ -21,8 +21,10 @@ export default function AnomalyDetection({ cityName }) {
       const data = await mlAPI.getAnomalies(cityName, days);
       setAnomalies(data.anomalies);
     } catch (err) {
-      const message = err.response?.data?.detail || 'Failed to load anomalies. Insufficient historical data.';
-      setError(message);
+      setError(
+        'Not enough data yet. Anomaly detection requires at least 10 days of weather history. ' +
+        'Weather is collected hourly - check back soon!'
+      );
       console.error('Anomaly load error:', err);
     } finally {
       setLoading(false);
@@ -67,8 +69,11 @@ export default function AnomalyDetection({ cityName }) {
 
       {anomalies.length === 0 ? (
         <div className="ml-empty">
-          <p>No anomalies detected in the selected period.</p>
-          <p className="ml-empty-hint">This means the weather has been consistent with historical patterns.</p>
+          <p>✓ No unusual weather patterns detected</p>
+          <p className="ml-empty-hint">
+            Temperature has been consistent with historical averages.
+            Anomalies are flagged when values deviate more than 2 standard deviations from normal.
+          </p>
         </div>
       ) : (
         <div className="anomaly-list">
@@ -82,7 +87,7 @@ export default function AnomalyDetection({ cityName }) {
                   {anomaly.severity}
                 </span>
                 <span className="anomaly-date">
-                  {new Date(anomaly.detected_at).toLocaleDateString()}
+                  {new Date(anomaly.timestamp).toLocaleDateString()}
                 </span>
               </div>
               <div className="anomaly-details">
@@ -95,10 +100,10 @@ export default function AnomalyDetection({ cityName }) {
                   <span className="value-number">{anomaly.expected_value?.toFixed(1)}°C</span>
                 </div>
                 <div className="anomaly-value">
-                  <span className="value-label">Deviation</span>
+                  <span className="value-label">Z-Score</span>
                   <span className="value-number deviation">
                     {anomaly.deviation > 0 ? '+' : ''}
-                    {anomaly.deviation?.toFixed(1)}°C
+                    {anomaly.deviation?.toFixed(1)}σ
                   </span>
                 </div>
               </div>

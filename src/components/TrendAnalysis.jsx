@@ -22,8 +22,10 @@ export default function TrendAnalysis({ cityName }) {
       const data = await mlAPI.getTrends(cityName, 'temperature', days);
       setTrends(data);
     } catch (err) {
-      const message = err.response?.data?.detail || 'Failed to load trends. Insufficient historical data.';
-      setError(message);
+      setError(
+        'Not enough data yet. Trend analysis requires at least 30 days of weather history. ' +
+        'Weather is collected hourly - check back in a few days!'
+      );
       console.error('Trend load error:', err);
     } finally {
       setLoading(false);

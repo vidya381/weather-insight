@@ -21,8 +21,10 @@ export default function PatternClustering({ cityName }) {
       const data = await mlAPI.getPatterns(cityName, days);
       setPatterns(data.patterns);
     } catch (err) {
-      const message = err.response?.data?.detail || 'Failed to load patterns. Insufficient historical data.';
-      setError(message);
+      setError(
+        'Not enough data yet. Pattern clustering requires at least 30 days of weather history. ' +
+        'Weather is collected hourly - check back in a few days!'
+      );
       console.error('Pattern load error:', err);
     } finally {
       setLoading(false);
@@ -59,8 +61,11 @@ export default function PatternClustering({ cityName }) {
 
       {patterns.length === 0 ? (
         <div className="ml-empty">
-          <p>No patterns detected yet.</p>
-          <p className="ml-empty-hint">More historical data is needed to identify weather patterns.</p>
+          <p>Collecting weather patterns...</p>
+          <p className="ml-empty-hint">
+            K-means clustering groups similar weather days together.
+            This feature becomes available after 30 days of data collection.
+          </p>
         </div>
       ) : (
         <div className="pattern-list">
