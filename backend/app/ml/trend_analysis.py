@@ -4,7 +4,7 @@ Analyze temperature trends using linear regression
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Dict, Any, Tuple
 from sqlalchemy.orm import Session
 import statistics
@@ -184,7 +184,7 @@ def analyze_trends(
         # Only save if it's been more than 1 day since last analysis
         should_save = True
         if existing:
-            time_since_last = datetime.utcnow() - existing.analyzed_at
+            time_since_last = datetime.now(timezone.utc) - existing.analyzed_at
             if time_since_last < timedelta(days=1):
                 should_save = False
 
