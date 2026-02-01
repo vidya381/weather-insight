@@ -4,11 +4,22 @@
   border-radius: 12px;
   padding: 1.5rem;
   min-width: 320px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s ease;
+}
+
+.weather-widget:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 body.dark-mode .weather-widget {
   background: #1A1A1A;
   border-color: #2A2A2A;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .weather-widget:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .weather-widget.loading,
@@ -63,10 +74,11 @@ body.dark-mode .error-text {
 }
 
 .city-title {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: #111827;
   margin: 0 0 0.25rem 0;
+  letter-spacing: -0.01em;
 }
 
 body.dark-mode .city-title {
@@ -114,31 +126,75 @@ body.dark-mode .weather-desc {
   align-items: center;
 }
 
+.temp-main {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.weather-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.weather-icon {
+  color: #3b82f6;
+  filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.3));
+}
+
+body.dark-mode .weather-icon {
+  color: #60A5FA;
+}
+
 .temp-display {
   display: flex;
   align-items: flex-start;
 }
 
 .temp-value {
-  font-size: 4rem;
-  font-weight: 300;
+  font-size: 4.5rem;
+  font-weight: 200;
   color: #111827;
   line-height: 1;
+  letter-spacing: -0.02em;
 }
 
 body.dark-mode .temp-value {
   color: #E1E1E6;
 }
 
-.temp-unit {
-  font-size: 1.5rem;
-  color: #6b7280;
-  margin-top: 0.5rem;
-  margin-left: 0.25rem;
+/* Temperature color coding */
+.temp-value.hot {
+  color: #dc2626;
 }
 
-body.dark-mode .temp-unit {
-  color: #8B8B8F;
+.temp-value.warm {
+  color: #f59e0b;
+}
+
+.temp-value.cool {
+  color: #3b82f6;
+}
+
+.temp-value.cold {
+  color: #06b6d4;
+}
+
+body.dark-mode .temp-value.hot {
+  color: #F87171;
+}
+
+body.dark-mode .temp-value.warm {
+  color: #FBBF24;
+}
+
+body.dark-mode .temp-value.cool {
+  color: #60A5FA;
+}
+
+body.dark-mode .temp-value.cold {
+  color: #22D3EE;
 }
 
 .weather-details {
@@ -184,6 +240,11 @@ body.dark-mode .detail-value {
     flex-direction: column;
     align-items: flex-start;
     gap: 1.5rem;
+  }
+
+  .temp-main {
+    width: 100%;
+    justify-content: center;
   }
 
   .weather-details {

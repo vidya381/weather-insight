@@ -2,7 +2,24 @@ import { useState, useEffect, memo } from 'react';
 import { weatherAPI } from '../api/weather';
 import { citiesAPI } from '../api/cities';
 import Skeleton from './Skeleton';
+import {
+  WiDaySunny, WiCloudy, WiRain, WiSnow, WiThunderstorm,
+  WiFog, WiDayCloudy, WiNightClear, WiNightCloudy
+} from 'react-icons/wi';
 import './WeatherWidget.css';
+
+const getWeatherIcon = (condition, size = 80) => {
+  const iconProps = { size, className: 'weather-icon' };
+  const cond = condition?.toLowerCase() || '';
+
+  if (cond.includes('clear')) return <WiDaySunny {...iconProps} />;
+  if (cond.includes('cloud')) return <WiCloudy {...iconProps} />;
+  if (cond.includes('rain') || cond.includes('drizzle')) return <WiRain {...iconProps} />;
+  if (cond.includes('snow')) return <WiSnow {...iconProps} />;
+  if (cond.includes('thunder') || cond.includes('storm')) return <WiThunderstorm {...iconProps} />;
+  if (cond.includes('fog') || cond.includes('mist') || cond.includes('haze')) return <WiFog {...iconProps} />;
+  return <WiDayCloudy {...iconProps} />;
+};
 
 function WeatherWidget({ city, onRemove, isFavorite }) {
   const [weather, setWeather] = useState(null);
@@ -84,6 +101,16 @@ function WeatherWidget({ city, onRemove, isFavorite }) {
 
   if (!weather) return null;
 
+  // Color-code temperature
+  const getTemperatureClass = (temp) => {
+    if (temp >= 30) return 'hot';
+    if (temp >= 20) return 'warm';
+    if (temp >= 10) return 'cool';
+    return 'cold';
+  };
+
+  const tempClass = getTemperatureClass(weather.temperature);
+
   return (
     <div className="weather-widget">
       <div className="widget-header">
@@ -104,9 +131,13 @@ function WeatherWidget({ city, onRemove, isFavorite }) {
       </div>
 
       <div className="widget-content">
-        <div className="temp-display">
-          <span className="temp-value">{Math.round(weather.temperature)}°</span>
-          <span className="temp-unit">C</span>
+        <div className="temp-main">
+          <div className="weather-icon-wrapper">
+            {getWeatherIcon(weather.weather.main)}
+          </div>
+          <div className="temp-display">
+            <span className={`temp-value ${tempClass}`}>{Math.round(weather.temperature)}°</span>
+          </div>
         </div>
 
         <div className="weather-details">
