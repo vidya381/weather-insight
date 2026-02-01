@@ -77,3 +77,37 @@
   background-color: #f3f4f6;
   border-radius: 4px;
 }
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .city-search {
+    max-width: 100%;
+  }
+
+  .search-input {
+    padding: 0.875rem 1rem;
+    font-size: 1rem; /* Prevent zoom on iOS */
+  }
+
+  .search-results {
+    max-height: 250px;
+  }
+
+  .search-result-item {
+    padding: 1rem;
+  }
+
+  .city-name {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .search-input {
+    padding: 0.75rem 0.875rem;
+  }
+
+  .search-result-item {
+    padding: 0.875rem;
+  }
+}
