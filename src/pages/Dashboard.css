@@ -64,10 +64,13 @@
 }
 
 @keyframes sparkle {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.6;
     transform: scale(0.9);
@@ -88,10 +91,13 @@
 }
 
 @keyframes sparkleHover {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }
+
   50% {
     transform: scale(1.15);
     opacity: 0.8;
@@ -376,18 +382,24 @@ body.dark-mode .loading-message {
 }
 
 @keyframes sunPulse {
-  0%, 100% {
+
+  0%,
+  100% {
     filter: drop-shadow(0 4px 16px rgba(253, 184, 19, 0.6));
   }
+
   50% {
     filter: drop-shadow(0 6px 24px rgba(253, 184, 19, 0.8));
   }
 }
 
 @keyframes floatIcon {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -481,6 +493,110 @@ body.dark-mode .error-message p {
   color: #ffffff;
 }
 
+/* Responsive - Header */
+@media (max-width: 640px) {
+  .dashboard-header {
+    padding: 0.75rem 0 !important;
+    padding-top: max(0.75rem, env(safe-area-inset-top)) !important;
+  }
+
+  .header-content {
+    padding: 0 max(0.875rem, env(safe-area-inset-left)) 0 max(0.875rem, env(safe-area-inset-right)) !important;
+    gap: 0.5rem !important;
+    align-items: center !important;
+    min-height: 52px !important;
+  }
+
+  .logo-section {
+    gap: 0.5rem;
+    flex-shrink: 0;
+    align-items: center;
+    height: auto;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.125rem;
+    white-space: nowrap;
+    line-height: normal;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .logo-icon-wrapper {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo-cloud {
+    width: 28px;
+    height: 28px;
+    display: block;
+  }
+
+  .logo-sparkle {
+    width: 14px;
+    height: 14px;
+    top: -1px;
+    right: -1px;
+  }
+
+  .header-actions {
+    gap: 0.375rem;
+    flex-shrink: 0;
+    align-items: center;
+    height: auto;
+  }
+
+  .header-btn span {
+    display: none;
+  }
+
+  .header-btn {
+    padding: 0;
+    min-width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .header-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .profile-trigger {
+    padding: 0 0.5rem;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .profile-trigger svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .profile-trigger .chevron-icon {
+    width: 15px;
+    height: 15px;
+  }
+
+  .user-name {
+    font-size: 0.875rem;
+  }
+}
+
 /* Responsive - Empty State */
 @media (max-width: 640px) {
   .empty-state {
@@ -496,7 +612,8 @@ body.dark-mode .error-message p {
   }
 
   .empty-features {
-    gap: 1.5rem;
+    gap: 2rem;
+    margin-bottom: 2.5rem;
   }
 
   .empty-feature {
@@ -528,7 +645,8 @@ body.dark-mode .error-message p {
   }
 
   .user-name {
-    display: none; /* Hide username on tablet */
+    display: none;
+    /* Hide username on tablet */
   }
 
   .header-actions {
@@ -561,17 +679,6 @@ body.dark-mode .error-message p {
 @media (max-width: 640px) {
   .dashboard-main {
     padding: 1rem 0.75rem;
-  }
-
-  .header-content {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .header-actions {
-    width: 100%;
-    justify-content: flex-end;
   }
 
   .dashboard-content h2 {

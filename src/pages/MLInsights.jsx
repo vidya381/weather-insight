@@ -67,7 +67,7 @@ export default function MLInsights() {
               onClick={() => navigate('/dashboard')}
               className="header-btn header-btn-home"
             >
-              <IoHome size={18} />
+              <IoHome size={20} />
               <span>Dashboard</span>
             </button>
             <ProfileDropdown

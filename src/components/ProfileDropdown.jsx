@@ -41,10 +41,10 @@ export default function ProfileDropdown({ username, onLogout, onEditProfile }) {
         className="profile-trigger"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <IoPerson size={18} className="user-icon" />
+        <IoPerson size={20} className="user-icon" />
         <span className="user-name">{username}</span>
         <IoChevronDown
-          size={16}
+          size={18}
           className={`chevron-icon ${isOpen ? 'open' : ''}`}
         />
       </button>
@@ -52,12 +52,12 @@ export default function ProfileDropdown({ username, onLogout, onEditProfile }) {
       {isOpen && (
         <div className="dropdown-menu">
           <button className="dropdown-item" onClick={handleEditProfile}>
-            <IoSettings size={18} />
+            <IoSettings size={20} />
             <span>Edit Profile</span>
           </button>
           <div className="dropdown-divider" />
           <button className="dropdown-item dropdown-item-logout" onClick={handleLogout}>
-            <IoLogOut size={18} />
+            <IoLogOut size={20} />
             <span>Logout</span>
           </button>
         </div>

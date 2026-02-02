@@ -115,7 +115,7 @@ export default function Dashboard() {
               onClick={() => navigate('/ml-insights')}
               className="header-btn header-btn-ml"
             >
-              <IoAnalytics size={18} />
+              <IoAnalytics size={20} />
               <span>ML Insights</span>
             </button>
             <ProfileDropdown
