@@ -28,17 +28,74 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.2s;
 }
 
-.logo-icon {
+.logo-section:active {
+  opacity: 0.8;
+}
+
+.logo-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  transition: all 0.3s;
+}
+
+.logo-cloud {
   color: #60A5FA;
   filter: drop-shadow(0 2px 8px rgba(96, 165, 250, 0.4));
   transition: all 0.3s;
 }
 
-.logo-section:hover .logo-icon {
-  transform: rotate(-10deg) scale(1.05);
+.logo-sparkle {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  color: #FDB813;
+  filter: drop-shadow(0 2px 6px rgba(253, 184, 19, 0.6));
+  transition: all 0.3s;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.9);
+  }
+}
+
+.logo-section:hover .logo-icon-wrapper {
+  transform: scale(1.05);
+}
+
+.logo-section:hover .logo-cloud {
   filter: drop-shadow(0 4px 12px rgba(96, 165, 250, 0.6));
+}
+
+.logo-section:hover .logo-sparkle {
+  filter: drop-shadow(0 4px 12px rgba(253, 184, 19, 1));
+  animation: sparkleHover 1s ease-in-out infinite;
+}
+
+@keyframes sparkleHover {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.8;
+  }
 }
 
 .dashboard-header h1 {
@@ -313,9 +370,18 @@ body.dark-mode .loading-message {
 }
 
 .empty-weather-icon {
-  color: #60A5FA;
-  filter: drop-shadow(0 4px 16px rgba(96, 165, 250, 0.5));
-  animation: floatIcon 3s ease-in-out infinite;
+  color: #FDB813;
+  filter: drop-shadow(0 4px 16px rgba(253, 184, 19, 0.6));
+  animation: floatIcon 3s ease-in-out infinite, sunPulse 2s ease-in-out infinite;
+}
+
+@keyframes sunPulse {
+  0%, 100% {
+    filter: drop-shadow(0 4px 16px rgba(253, 184, 19, 0.6));
+  }
+  50% {
+    filter: drop-shadow(0 6px 24px rgba(253, 184, 19, 0.8));
+  }
 }
 
 @keyframes floatIcon {
@@ -443,8 +509,7 @@ body.dark-mode .error-message p {
   }
 
   .empty-weather-icon {
-    width: 64px;
-    height: 64px;
+    font-size: 64px;
   }
 }
 

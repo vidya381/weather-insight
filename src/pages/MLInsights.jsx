@@ -8,7 +8,7 @@ import PatternClustering from '../components/PatternClustering';
 import ProfileDropdown from '../components/ProfileDropdown';
 import ProfileEditModal from '../components/ProfileEditModal';
 import Spinner from '../components/Spinner';
-import { IoCloudyNight, IoHome } from 'react-icons/io5';
+import { IoCloud, IoSparkles, IoHome } from 'react-icons/io5';
 import './Dashboard.css';
 import './MLInsights.css';
 
@@ -55,8 +55,11 @@ export default function MLInsights() {
     <div className="dashboard">
       <header className="dashboard-header">
         <div className="header-content">
-          <div className="logo-section">
-            <IoCloudyNight className="logo-icon" size={32} />
+          <div className="logo-section" onClick={() => navigate('/dashboard')}>
+            <div className="logo-icon-wrapper">
+              <IoCloud className="logo-icon logo-cloud" size={32} />
+              <IoSparkles className="logo-icon logo-sparkle" size={16} />
+            </div>
             <h1>WeatherInsight</h1>
           </div>
           <div className="header-actions">

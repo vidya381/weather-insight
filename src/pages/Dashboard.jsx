@@ -11,7 +11,7 @@ import WeatherBackground from '../components/WeatherBackground';
 import ProfileDropdown from '../components/ProfileDropdown';
 import ProfileEditModal from '../components/ProfileEditModal';
 import Spinner from '../components/Spinner';
-import { IoCloudyNight, IoAnalytics, IoSparkles, IoTrendingUp, IoLocationSharp } from 'react-icons/io5';
+import { IoCloud, IoAnalytics, IoSparkles, IoTrendingUp, IoLocationSharp, IoSunny } from 'react-icons/io5';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -103,8 +103,11 @@ export default function Dashboard() {
 
       <header className="dashboard-header">
         <div className="header-content">
-          <div className="logo-section">
-            <IoCloudyNight className="logo-icon" size={32} />
+          <div className="logo-section" onClick={() => navigate('/dashboard')}>
+            <div className="logo-icon-wrapper">
+              <IoCloud className="logo-icon logo-cloud" size={32} />
+              <IoSparkles className="logo-icon logo-sparkle" size={16} />
+            </div>
             <h1>WeatherInsight</h1>
           </div>
           <div className="header-actions">
@@ -165,7 +168,7 @@ export default function Dashboard() {
             <div className="hero-section">
               <div className="empty-state">
                 <div className="empty-icon-wrapper">
-                  <IoCloudyNight className="empty-weather-icon" size={80} />
+                  <IoSunny className="empty-weather-icon" size={80} />
                 </div>
                 <h2 className="empty-title">Welcome to WeatherInsight</h2>
                 <p className="empty-subtitle">
