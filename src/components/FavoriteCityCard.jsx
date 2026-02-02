@@ -2,22 +2,21 @@ import { useState, useEffect, memo } from 'react';
 import { weatherAPI } from '../api/weather';
 import { citiesAPI } from '../api/cities';
 import {
-  WiDaySunny, WiCloudy, WiRain, WiSnow, WiThunderstorm,
-  WiFog, WiDayCloudy
-} from 'react-icons/wi';
+  IoSunny, IoPartlySunny, IoCloud, IoRainy, IoSnow,
+  IoThunderstorm, IoCloudyNight
+} from 'react-icons/io5';
 import './FavoriteCityCard.css';
 
 const getWeatherIcon = (condition, size = 48) => {
-  const iconProps = { size, className: 'weather-icon' };
   const cond = condition?.toLowerCase() || '';
 
-  if (cond.includes('clear')) return <WiDaySunny {...iconProps} />;
-  if (cond.includes('cloud')) return <WiCloudy {...iconProps} />;
-  if (cond.includes('rain') || cond.includes('drizzle')) return <WiRain {...iconProps} />;
-  if (cond.includes('snow')) return <WiSnow {...iconProps} />;
-  if (cond.includes('thunder') || cond.includes('storm')) return <WiThunderstorm {...iconProps} />;
-  if (cond.includes('fog') || cond.includes('mist') || cond.includes('haze')) return <WiFog {...iconProps} />;
-  return <WiDayCloudy {...iconProps} />;
+  if (cond.includes('clear')) return <IoSunny size={size} className="weather-icon weather-icon-clear" />;
+  if (cond.includes('cloud')) return <IoCloud size={size} className="weather-icon weather-icon-cloudy" />;
+  if (cond.includes('rain') || cond.includes('drizzle')) return <IoRainy size={size} className="weather-icon weather-icon-rain" />;
+  if (cond.includes('snow')) return <IoSnow size={size} className="weather-icon weather-icon-snow" />;
+  if (cond.includes('thunder') || cond.includes('storm')) return <IoThunderstorm size={size} className="weather-icon weather-icon-thunder" />;
+  if (cond.includes('fog') || cond.includes('mist') || cond.includes('haze')) return <IoCloudyNight size={size} className="weather-icon weather-icon-fog" />;
+  return <IoPartlySunny size={size} className="weather-icon weather-icon-cloudy" />;
 };
 
 function FavoriteCityCard({ city, onRemove, onSelect }) {
