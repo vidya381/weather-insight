@@ -6,17 +6,19 @@ import AnomalyDetection from '../components/AnomalyDetection';
 import TrendAnalysis from '../components/TrendAnalysis';
 import PatternClustering from '../components/PatternClustering';
 import ProfileDropdown from '../components/ProfileDropdown';
+import ProfileEditModal from '../components/ProfileEditModal';
 import Spinner from '../components/Spinner';
 import { IoCloudyNight, IoHome } from 'react-icons/io5';
 import './Dashboard.css';
 import './MLInsights.css';
 
 export default function MLInsights() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
   const [selectedCity, setSelectedCity] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showProfileEdit, setShowProfileEdit] = useState(false);
 
   useEffect(() => {
     loadFavorites();
@@ -42,8 +44,11 @@ export default function MLInsights() {
   };
 
   const handleEditProfile = () => {
-    // TODO: Implement profile edit functionality
-    console.log('Edit profile clicked');
+    setShowProfileEdit(true);
+  };
+
+  const handleProfileUpdateSuccess = (updatedUser) => {
+    updateUser(updatedUser);
   };
 
   return (
@@ -124,6 +129,15 @@ export default function MLInsights() {
           )}
         </div>
       </main>
+
+      {/* Profile Edit Modal */}
+      {showProfileEdit && (
+        <ProfileEditModal
+          user={user}
+          onClose={() => setShowProfileEdit(false)}
+          onSuccess={handleProfileUpdateSuccess}
+        />
+      )}
     </div>
   );
 }

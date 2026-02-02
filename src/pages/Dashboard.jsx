@@ -9,16 +9,18 @@ import FavoriteCityCard from '../components/FavoriteCityCard';
 import AddCityCard from '../components/AddCityCard';
 import WeatherBackground from '../components/WeatherBackground';
 import ProfileDropdown from '../components/ProfileDropdown';
+import ProfileEditModal from '../components/ProfileEditModal';
 import Spinner from '../components/Spinner';
 import { IoCloudyNight, IoAnalytics } from 'react-icons/io5';
 import './Dashboard.css';
 
 export default function Dashboard() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
   const [selectedCity, setSelectedCity] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
+  const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const searchSectionRef = useRef(null);
@@ -83,8 +85,11 @@ export default function Dashboard() {
   };
 
   const handleEditProfile = () => {
-    // TODO: Implement profile edit functionality
-    console.log('Edit profile clicked');
+    setShowProfileEdit(true);
+  };
+
+  const handleProfileUpdateSuccess = (updatedUser) => {
+    updateUser(updatedUser);
   };
 
   return (
@@ -199,6 +204,15 @@ export default function Dashboard() {
           )}
         </div>
       </main>
+
+      {/* Profile Edit Modal */}
+      {showProfileEdit && (
+        <ProfileEditModal
+          user={user}
+          onClose={() => setShowProfileEdit(false)}
+          onSuccess={handleProfileUpdateSuccess}
+        />
+      )}
     </div>
   );
 }

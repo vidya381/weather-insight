@@ -27,4 +27,9 @@ export const authAPI = {
     const response = await apiClient.get('/api/auth/me');
     return response.data;
   },
+
+  updateProfile: async (updateData) => {
+    const response = await apiClient.put('/api/auth/me', updateData);
+    return response.data;
+  },
 };
