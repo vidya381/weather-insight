@@ -5,7 +5,9 @@ import { citiesAPI } from '../api/cities';
 import AnomalyDetection from '../components/AnomalyDetection';
 import TrendAnalysis from '../components/TrendAnalysis';
 import PatternClustering from '../components/PatternClustering';
+import ProfileDropdown from '../components/ProfileDropdown';
 import Spinner from '../components/Spinner';
+import { IoCloudyNight, IoHome } from 'react-icons/io5';
 import './Dashboard.css';
 import './MLInsights.css';
 
@@ -39,22 +41,32 @@ export default function MLInsights() {
     navigate('/login');
   };
 
+  const handleEditProfile = () => {
+    // TODO: Implement profile edit functionality
+    console.log('Edit profile clicked');
+  };
+
   return (
     <div className="dashboard">
       <header className="dashboard-header">
         <div className="header-content">
-          <h1>WeatherInsight</h1>
+          <div className="logo-section">
+            <IoCloudyNight className="logo-icon" size={32} />
+            <h1>WeatherInsight</h1>
+          </div>
           <div className="header-actions">
             <button
               onClick={() => navigate('/dashboard')}
-              className="btn-secondary"
+              className="header-btn header-btn-home"
             >
-              Dashboard
+              <IoHome size={18} />
+              <span>Dashboard</span>
             </button>
-            <span className="user-name">{user?.username}</span>
-            <button onClick={handleLogout} className="btn-secondary">
-              Logout
-            </button>
+            <ProfileDropdown
+              username={user?.username}
+              onLogout={handleLogout}
+              onEditProfile={handleEditProfile}
+            />
           </div>
         </div>
       </header>

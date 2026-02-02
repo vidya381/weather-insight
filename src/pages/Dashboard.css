@@ -5,13 +5,13 @@
 }
 
 .dashboard-header {
-  background-color: #ffffff;
-  border-bottom: 1px solid #e5e5e5;
-}
-
-body.dark-mode .dashboard-header {
-  background-color: #2a2f3c;
-  border-bottom-color: #363c4f;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(42, 47, 60, 0.7);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(66, 71, 86, 0.3);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
 }
 
 .header-content {
@@ -23,31 +23,82 @@ body.dark-mode .dashboard-header {
   align-items: center;
 }
 
+/* Logo Section */
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-icon {
+  color: #60A5FA;
+  filter: drop-shadow(0 2px 8px rgba(96, 165, 250, 0.4));
+  transition: all 0.3s;
+}
+
+.logo-section:hover .logo-icon {
+  transform: rotate(-10deg) scale(1.05);
+  filter: drop-shadow(0 4px 12px rgba(96, 165, 250, 0.6));
+}
+
 .dashboard-header h1 {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  color: #111827;
+  color: #E8E8ED;
   margin: 0;
   letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #E8E8ED 0%, #60A5FA 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-body.dark-mode .dashboard-header h1 {
-  color: #E1E1E6;
-}
-
+/* Header Actions */
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
-.user-name {
-  font-size: 0.95rem;
-  color: #6b7280;
+/* Header Buttons */
+.header-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: rgba(54, 58, 79, 0.5);
+  border: 1px solid rgba(66, 71, 86, 0.6);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #C1C1C6;
 }
 
-body.dark-mode .user-name {
-  color: #8B8B8F;
+.header-btn:hover {
+  background: rgba(54, 58, 79, 0.8);
+  border-color: rgba(96, 165, 250, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.header-btn-ml:hover {
+  border-color: rgba(139, 92, 246, 0.6);
+  color: #A78BFA;
+}
+
+.header-btn-ml:hover svg {
+  color: #A78BFA;
+}
+
+.header-btn-home:hover {
+  border-color: rgba(96, 165, 250, 0.6);
+  color: #60A5FA;
+}
+
+.header-btn-home:hover svg {
+  color: #60A5FA;
 }
 
 .btn-primary {

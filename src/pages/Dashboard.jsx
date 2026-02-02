@@ -8,7 +8,9 @@ import DailyForecast from '../components/DailyForecast';
 import FavoriteCityCard from '../components/FavoriteCityCard';
 import AddCityCard from '../components/AddCityCard';
 import WeatherBackground from '../components/WeatherBackground';
+import ProfileDropdown from '../components/ProfileDropdown';
 import Spinner from '../components/Spinner';
+import { IoCloudyNight, IoAnalytics } from 'react-icons/io5';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -80,6 +82,11 @@ export default function Dashboard() {
     }, 100);
   };
 
+  const handleEditProfile = () => {
+    // TODO: Implement profile edit functionality
+    console.log('Edit profile clicked');
+  };
+
   return (
     <div className="dashboard">
       {/* Dynamic weather background */}
@@ -87,18 +94,23 @@ export default function Dashboard() {
 
       <header className="dashboard-header">
         <div className="header-content">
-          <h1>WeatherInsight</h1>
+          <div className="logo-section">
+            <IoCloudyNight className="logo-icon" size={32} />
+            <h1>WeatherInsight</h1>
+          </div>
           <div className="header-actions">
             <button
               onClick={() => navigate('/ml-insights')}
-              className="btn-secondary"
+              className="header-btn header-btn-ml"
             >
-              ML Insights
+              <IoAnalytics size={18} />
+              <span>ML Insights</span>
             </button>
-            <span className="user-name">{user?.username}</span>
-            <button onClick={handleLogout} className="btn-secondary">
-              Logout
-            </button>
+            <ProfileDropdown
+              username={user?.username}
+              onLogout={handleLogout}
+              onEditProfile={handleEditProfile}
+            />
           </div>
         </div>
       </header>
