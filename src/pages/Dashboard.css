@@ -1,10 +1,7 @@
 .dashboard {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf4 100%);
-}
-
-body.dark-mode .dashboard {
-  background: linear-gradient(135deg, #1e2029 0%, #252937 100%);
+  position: relative;
+  /* Background handled by WeatherBackground component */
 }
 
 .dashboard-header {

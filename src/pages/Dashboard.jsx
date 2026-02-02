@@ -7,7 +7,7 @@ import HeroWeatherCard from '../components/HeroWeatherCard';
 import DailyForecast from '../components/DailyForecast';
 import FavoriteCityCard from '../components/FavoriteCityCard';
 import AddCityCard from '../components/AddCityCard';
-import ThemeToggle from '../components/ThemeToggle';
+import WeatherBackground from '../components/WeatherBackground';
 import Spinner from '../components/Spinner';
 import './Dashboard.css';
 
@@ -82,6 +82,9 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard">
+      {/* Dynamic weather background */}
+      <WeatherBackground city={selectedCity} />
+
       <header className="dashboard-header">
         <div className="header-content">
           <h1>WeatherInsight</h1>
@@ -93,7 +96,6 @@ export default function Dashboard() {
               ML Insights
             </button>
             <span className="user-name">{user?.username}</span>
-            <ThemeToggle />
             <button onClick={handleLogout} className="btn-secondary">
               Logout
             </button>
