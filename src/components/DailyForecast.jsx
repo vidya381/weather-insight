@@ -136,7 +136,7 @@ function DailyForecast({ city }) {
 
   return (
     <div className="daily-forecast-section">
-      <h2>Daily Forecast</h2>
+      <h2 className="section-title section-title-forecast">Daily Forecast</h2>
       <div className="daily-forecast-grid">
         {forecast.map((day, index) => (
           <div key={index} className="daily-card">

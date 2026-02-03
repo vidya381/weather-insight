@@ -7,8 +7,9 @@ import TrendAnalysis from '../components/TrendAnalysis';
 import PatternClustering from '../components/PatternClustering';
 import ProfileDropdown from '../components/ProfileDropdown';
 import ProfileEditModal from '../components/ProfileEditModal';
+import WeatherBackground from '../components/WeatherBackground';
 import Spinner from '../components/Spinner';
-import { IoCloud, IoSparkles, IoHome } from 'react-icons/io5';
+import { IoCloud, IoSparkles, IoHome, IoAnalytics, IoTrendingUp, IoBulb, IoGitNetwork } from 'react-icons/io5';
 import './Dashboard.css';
 import './MLInsights.css';
 
@@ -53,6 +54,9 @@ export default function MLInsights() {
 
   return (
     <div className="dashboard">
+      {/* Dynamic weather background */}
+      <WeatherBackground city={selectedCity} />
+
       <header className="dashboard-header">
         <div className="header-content">
           <div className="logo-section" onClick={() => navigate('/dashboard')}>
@@ -81,9 +85,12 @@ export default function MLInsights() {
 
       <main className="dashboard-main">
         <div className="dashboard-content">
-          <div className="ml-insights-header">
-            <h2>ML Insights</h2>
-            {!loading && favorites.length > 0 && (
+          {!loading && favorites.length > 0 && (
+            <div className="ml-insights-header">
+              <div className="ml-title-section">
+                <IoAnalytics className="ml-title-icon" size={32} />
+                <h2>ML Insights</h2>
+              </div>
               <div className="city-selector">
                 <label htmlFor="city-select">Select City:</label>
                 <select
@@ -102,24 +109,44 @@ export default function MLInsights() {
                   ))}
                 </select>
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {loading && <Spinner text="Loading ML insights..." />}
 
           {!loading && favorites.length === 0 && (
-            <div className="empty-message">
-              <p>No favorite cities yet.</p>
-              <p className="empty-hint">
-                Add cities to your favorites from the dashboard to see ML insights.
-              </p>
-              <button
-                onClick={() => navigate('/dashboard')}
-                className="btn-primary"
-                style={{ marginTop: '1rem' }}
-              >
-                Go to Dashboard
-              </button>
+            <div className="hero-section">
+              <div className="empty-state">
+                <div className="empty-icon-wrapper">
+                  <IoAnalytics className="empty-ml-icon" size={80} />
+                </div>
+                <h2 className="empty-title">Unlock Weather Insights</h2>
+                <p className="empty-subtitle">
+                  Add favorite cities to unlock powerful ML-driven weather analytics and predictions
+                </p>
+
+                <div className="empty-features">
+                  <div className="empty-feature">
+                    <IoBulb size={24} />
+                    <span>Anomaly Detection</span>
+                  </div>
+                  <div className="empty-feature">
+                    <IoTrendingUp size={24} />
+                    <span>Trend Analysis</span>
+                  </div>
+                  <div className="empty-feature">
+                    <IoGitNetwork size={24} />
+                    <span>Pattern Clustering</span>
+                  </div>
+                </div>
+
+                <button
+                  className="btn-primary btn-cta"
+                  onClick={() => navigate('/dashboard')}
+                >
+                  Add Your First City
+                </button>
+              </div>
             </div>
           )}
 
