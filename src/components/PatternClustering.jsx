@@ -37,27 +37,6 @@ function PatternClustering({ cityName }) {
     return colors[clusterId % colors.length];
   };
 
-  if (loading) {
-    return (
-      <div className="ml-section">
-        <Spinner text="Clustering weather patterns..." />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="ml-section">
-        <div className="ml-error">
-          <p>{error}</p>
-          <button onClick={loadPatterns} className="retry-btn">
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="ml-section">
       <div className="ml-header">
@@ -72,6 +51,20 @@ function PatternClustering({ cityName }) {
           <option value={180}>Last 180 days</option>
         </select>
       </div>
+
+      {loading && <Spinner text="Clustering weather patterns..." />}
+
+      {error && (
+        <div className="ml-error">
+          <p>{error}</p>
+          <button onClick={loadPatterns} className="retry-btn">
+            Retry
+          </button>
+        </div>
+      )}
+
+      {!loading && !error && (
+        <>
 
       {patterns.length === 0 ? (
         <div className="ml-empty">
@@ -151,6 +144,8 @@ function PatternClustering({ cityName }) {
           and pressure patterns. This helps identify recurring weather conditions.
         </p>
       </div>
+      </>
+      )}
     </div>
   );
 }

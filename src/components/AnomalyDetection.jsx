@@ -45,27 +45,6 @@ function AnomalyDetection({ cityName }) {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="ml-section">
-        <Spinner text="Analyzing temperature anomalies..." />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="ml-section">
-        <div className="ml-error">
-          <p>{error}</p>
-          <button onClick={loadAnomalies} className="retry-btn">
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="ml-section">
       <div className="ml-header">
@@ -80,6 +59,20 @@ function AnomalyDetection({ cityName }) {
           <option value={90}>Last 90 days</option>
         </select>
       </div>
+
+      {loading && <Spinner text="Analyzing temperature anomalies..." />}
+
+      {error && (
+        <div className="ml-error">
+          <p>{error}</p>
+          <button onClick={loadAnomalies} className="retry-btn">
+            Retry
+          </button>
+        </div>
+      )}
+
+      {!loading && !error && (
+        <>
 
       {anomalies.length === 0 ? (
         <div className="ml-empty">
@@ -127,6 +120,8 @@ function AnomalyDetection({ cityName }) {
             </div>
           ))}
         </div>
+      )}
+      </>
       )}
     </div>
   );

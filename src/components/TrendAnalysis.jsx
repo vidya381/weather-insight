@@ -45,34 +45,13 @@ function TrendAnalysis({ cityName }) {
     return '#6b7280';
   };
 
-  if (loading) {
-    return (
-      <div className="ml-section">
-        <Spinner text="Analyzing temperature trends..." />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="ml-section">
-        <div className="ml-error">
-          <p>{error}</p>
-          <button onClick={loadTrends} className="retry-btn">
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (!trends) return null;
-
   // Prepare chart data
-  const chartData = Object.entries(trends.predictions_7_day || {}).map(([day, value]) => ({
-    day: `Day ${day}`,
-    temperature: value,
-  }));
+  const chartData = trends?.predictions_7_day
+    ? Object.entries(trends.predictions_7_day).map(([day, value]) => ({
+        day: `Day ${day}`,
+        temperature: value,
+      }))
+    : [];
 
   return (
     <div className="ml-section">
@@ -88,6 +67,20 @@ function TrendAnalysis({ cityName }) {
           <option value={180}>Last 180 days</option>
         </select>
       </div>
+
+      {loading && <Spinner text="Analyzing temperature trends..." />}
+
+      {error && (
+        <div className="ml-error">
+          <p>{error}</p>
+          <button onClick={loadTrends} className="retry-btn">
+            Retry
+          </button>
+        </div>
+      )}
+
+      {!loading && !error && trends && (
+        <>
 
       <div className="trend-summary">
         <div className="trend-stat">
@@ -182,6 +175,8 @@ function TrendAnalysis({ cityName }) {
           </div>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }
