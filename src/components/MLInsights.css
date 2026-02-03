@@ -43,6 +43,12 @@ body.dark-mode .ml-section:hover {
   margin-bottom: 1.5rem;
 }
 
+.ml-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .ml-header h3 {
   font-size: 1.125rem;
   font-weight: 600;
@@ -52,6 +58,16 @@ body.dark-mode .ml-section:hover {
 
 body.dark-mode .ml-header h3 {
   color: #E1E1E6;
+}
+
+.ml-last-updated {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+body.dark-mode .ml-last-updated {
+  color: #6B6B6F;
 }
 
 .ml-select {
@@ -658,6 +674,10 @@ body.dark-mode .info-text {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
+  }
+
+  .ml-header-left {
+    width: 100%;
   }
 
   .ml-select {

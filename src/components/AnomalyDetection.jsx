@@ -8,6 +8,7 @@ function AnomalyDetection({ cityName }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [days, setDays] = useState(30);
+  const [lastUpdated, setLastUpdated] = useState(null);
 
   useEffect(() => {
     if (cityName) {
@@ -21,6 +22,7 @@ function AnomalyDetection({ cityName }) {
     try {
       const data = await mlAPI.getAnomalies(cityName, days);
       setAnomalies(data.anomalies);
+      setLastUpdated(new Date());
     } catch (err) {
       setError(
         'Not enough data yet. Anomaly detection requires at least 10 days of weather history. ' +
@@ -48,7 +50,18 @@ function AnomalyDetection({ cityName }) {
   return (
     <div className="ml-section">
       <div className="ml-header">
-        <h3>Temperature Anomalies</h3>
+        <div className="ml-header-left">
+          <h3>Temperature Anomalies</h3>
+          {lastUpdated && (
+            <span className="ml-last-updated">
+              Last updated: {lastUpdated.toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+              })}
+            </span>
+          )}
+        </div>
         <select
           value={days}
           onChange={(e) => setDays(Number(e.target.value))}
@@ -94,7 +107,14 @@ function AnomalyDetection({ cityName }) {
                   {anomaly.severity}
                 </span>
                 <span className="anomaly-date">
-                  {new Date(anomaly.timestamp).toLocaleDateString()}
+                  {new Date(anomaly.timestamp).toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                  })}
                 </span>
               </div>
               <div className="anomaly-details">
