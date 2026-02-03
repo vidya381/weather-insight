@@ -30,10 +30,13 @@ def simple_kmeans(data_points: List[List[float]], k: int = 3, max_iterations: in
     """
     import random
 
+    # Set fixed seed for reproducibility
+    random.seed(42)
+
     if len(data_points) < k:
         k = len(data_points)
 
-    # Initialize centroids randomly
+    # Initialize centroids randomly (but deterministically with seed)
     centroids = random.sample(data_points, k)
 
     for _ in range(max_iterations):
@@ -92,6 +95,104 @@ def normalize_features(features: List[List[float]]) -> List[List[float]]:
             normalized[i].append((f[feat_idx] - min_val) / range_val)
 
     return normalized
+
+
+def merge_similar_clusters(
+    patterns: List[Dict[str, Any]],
+    similarity_threshold: float = 0.08
+) -> List[Dict[str, Any]]:
+    """
+    Merge clusters that are too similar
+
+    Args:
+        patterns: List of cluster patterns
+        similarity_threshold: Maximum normalized distance to consider similar (0-1)
+                             Default 0.08 means merge if characteristics are very close:
+                             - Temp within ~3°C
+                             - Humidity within ~8%
+                             - Pressure within ~8 hPa
+
+    Returns:
+        Merged list of patterns
+    """
+    if len(patterns) <= 1:
+        return patterns
+
+    merged = []
+    used_indices = set()
+
+    for i, pattern_i in enumerate(patterns):
+        if i in used_indices:
+            continue
+
+        # Start a new merged cluster with this pattern
+        merged_pattern = {
+            "cluster_id": len(merged),
+            "cluster_label": pattern_i["cluster_label"],
+            "count": pattern_i["count"],
+            "similar_dates": pattern_i["similar_dates"][:],
+            "characteristics": pattern_i["characteristics"].copy()
+        }
+
+        # Look for similar patterns to merge
+        for j, pattern_j in enumerate(patterns[i+1:], start=i+1):
+            if j in used_indices:
+                continue
+
+            # Calculate similarity based on characteristics
+            chars_i = pattern_i["characteristics"]
+            chars_j = pattern_j["characteristics"]
+
+            # Normalize and compare (simple euclidean distance on normalized values)
+            # Assuming temp range ~0-40°C, humidity 0-100%, pressure 950-1050 hPa
+            temp_diff = abs(chars_i["avg_temperature"] - chars_j["avg_temperature"]) / 40.0
+            humidity_diff = abs(chars_i["avg_humidity"] - chars_j["avg_humidity"]) / 100.0
+            pressure_diff = abs(chars_i["avg_pressure"] - chars_j["avg_pressure"]) / 100.0
+
+            distance = (temp_diff**2 + humidity_diff**2 + pressure_diff**2) ** 0.5
+
+            # Only merge if we'll have at least 2 clusters remaining
+            # (Don't merge everything into 1 cluster)
+            remaining_patterns = len(patterns) - len(used_indices) - 1
+            if distance < similarity_threshold and remaining_patterns >= 2:
+                # Merge pattern_j into merged_pattern
+                merged_pattern["count"] += pattern_j["count"]
+                merged_pattern["similar_dates"].extend(pattern_j["similar_dates"])
+
+                # Recalculate weighted average characteristics
+                total_count = merged_pattern["count"]
+                count_i = pattern_i["count"]
+                count_j = pattern_j["count"]
+
+                for key in ["avg_temperature", "avg_humidity", "avg_pressure", "avg_wind_speed"]:
+                    weighted_avg = (
+                        chars_i[key] * count_i + chars_j[key] * count_j
+                    ) / total_count
+                    merged_pattern["characteristics"][key] = round(weighted_avg, 2)
+
+                used_indices.add(j)
+
+        # Deduplicate similar_dates by date (not timestamp) and limit to 10 unique dates
+        from datetime import datetime as dt
+        seen_dates = set()
+        unique_dates = []
+        for date_str in merged_pattern["similar_dates"]:
+            try:
+                date_only = dt.fromisoformat(date_str).date().isoformat()
+                if date_only not in seen_dates:
+                    seen_dates.add(date_only)
+                    unique_dates.append(date_str)
+                    if len(unique_dates) >= 10:
+                        break
+            except:
+                # If parsing fails, keep the original
+                unique_dates.append(date_str)
+
+        merged_pattern["similar_dates"] = unique_dates
+        merged.append(merged_pattern)
+        used_indices.add(i)
+
+    return merged
 
 
 def get_cluster_label(centroid: List[float], feature_names: List[str]) -> str:
@@ -251,6 +352,9 @@ def cluster_weather_patterns(
                         characteristics=characteristics
                     )
                     db.add(pattern)
+
+        # Merge similar clusters to avoid artificial splits
+        patterns = merge_similar_clusters(patterns)
 
         if patterns:
             db.commit()
