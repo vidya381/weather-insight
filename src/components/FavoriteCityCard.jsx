@@ -1,6 +1,7 @@
 import { useState, useEffect, memo } from 'react';
 import { weatherAPI } from '../api/weather';
 import { citiesAPI } from '../api/cities';
+import { removeGuestCity } from '../utils/guestCities';
 import {
   IoSunny, IoPartlySunny, IoCloud, IoRainy, IoSnow,
   IoThunderstorm, IoCloudyNight
@@ -19,7 +20,7 @@ const getWeatherIcon = (condition, size = 48) => {
   return <IoPartlySunny size={size} className="weather-icon weather-icon-cloudy" />;
 };
 
-function FavoriteCityCard({ city, onRemove, onSelect }) {
+function FavoriteCityCard({ city, onRemove, onSelect, isAuthenticated = true }) {
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,7 +46,13 @@ function FavoriteCityCard({ city, onRemove, onSelect }) {
   const handleRemove = async (e) => {
     e.stopPropagation();
     try {
-      await citiesAPI.removeFavorite(city.id);
+      if (isAuthenticated) {
+        // Remove from API for authenticated users
+        await citiesAPI.removeFavorite(city.id);
+      } else {
+        // Remove from localStorage for guests
+        removeGuestCity(city.id);
+      }
       if (onRemove) onRemove();
     } catch (err) {
       console.error('Failed to remove favorite:', err);

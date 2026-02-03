@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 
 from app.database import get_db
-from app.auth.jwt import get_current_user
+from app.auth.jwt import get_current_user, get_current_user_optional
 from app.models.user import User
 from app.models.city import City
 from app.repositories.city_repository import CityRepository
@@ -59,23 +59,27 @@ async def list_cities(
 async def search_cities(
     q: str = Query(..., min_length=1, description="Search query"),
     limit: int = Query(10, ge=1, le=50, description="Maximum number of results"),
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user_optional)
 ):
     """
     Search cities by name (case-insensitive, partial match)
 
-    Returns cities with `is_favorite` flag for authenticated user
+    **Public endpoint** - No authentication required
+    Returns cities with optional `is_favorite` flag for authenticated users
     """
     cities = CityRepository.search_by_name(db, q, limit=limit)
 
-    # Add is_favorite flag for each city
+    # Add is_favorite flag for each city (only if user is authenticated)
     result = []
     for city in cities:
         city_data = CityResponse.model_validate(city)
-        city_data.is_favorite = FavoriteCityRepository.is_favorite(
-            db, current_user.id, city.id
-        )
+        if current_user:
+            city_data.is_favorite = FavoriteCityRepository.is_favorite(
+                db, current_user.id, city.id
+            )
+        else:
+            city_data.is_favorite = False
         result.append(city_data)
 
     return result

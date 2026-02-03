@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { IoCloud, IoSparkles } from 'react-icons/io5';
 import './Auth.css';
 
 export default function Login() {
@@ -34,9 +35,20 @@ export default function Login() {
 
   return (
     <div className="auth-container">
+      <header className="auth-header">
+        <div className="auth-header-content">
+          <div className="logo-section" onClick={() => navigate('/dashboard')}>
+            <div className="logo-icon-wrapper">
+              <IoCloud className="logo-icon logo-cloud" size={28} />
+              <IoSparkles className="logo-icon logo-sparkle" size={14} />
+            </div>
+            <h1 className="logo-text">WeatherInsight</h1>
+          </div>
+        </div>
+      </header>
+
       <div className="auth-box">
-        <h1>WeatherInsight</h1>
-        <h2>Sign in to your account</h2>
+        <h2>Welcome Back</h2>
 
         {error && <div className="error-message">{error}</div>}
 

@@ -27,7 +27,14 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    // Only redirect to login for 401 errors if:
+    // 1. We're not already on auth pages (login/register)
+    // 2. It's not a login/register API call (to allow error messages to show)
+    const isAuthPage = ['/login', '/register'].includes(window.location.pathname);
+    const isAuthEndpoint = error.config?.url?.includes('/api/auth/login') ||
+                           error.config?.url?.includes('/api/auth/register');
+
+    if (error.response?.status === 401 && !isAuthPage && !isAuthEndpoint) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
