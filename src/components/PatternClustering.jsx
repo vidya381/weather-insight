@@ -113,26 +113,36 @@ function PatternClustering({ cityName }) {
                 </div>
               )}
 
-              {pattern.similar_dates && pattern.similar_dates.length > 0 && (
-                <div className="similar-dates">
-                  <span className="similar-label">Similar days:</span>
-                  <div className="similar-list">
-                    {pattern.similar_dates.slice(0, 5).map((date, idx) => (
-                      <span key={idx} className="similar-date">
-                        {new Date(date).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                        })}
-                      </span>
-                    ))}
-                    {pattern.similar_dates.length > 5 && (
-                      <span className="similar-more">
-                        +{pattern.similar_dates.length - 5} more
-                      </span>
-                    )}
+              {pattern.similar_dates && pattern.similar_dates.length > 0 && (() => {
+                // Deduplicate dates by date-only (ignore time)
+                const uniqueDates = [...new Set(
+                  pattern.similar_dates.map(date =>
+                    new Date(date).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })
+                  )
+                )];
+
+                return (
+                  <div className="similar-dates">
+                    <span className="similar-label">Similar days:</span>
+                    <div className="similar-list">
+                      {uniqueDates.slice(0, 5).map((dateStr, idx) => (
+                        <span key={idx} className="similar-date">
+                          {dateStr}
+                        </span>
+                      ))}
+                      {uniqueDates.length > 5 && (
+                        <span className="similar-more">
+                          +{uniqueDates.length - 5} more
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
             </div>
           ))}
         </div>
