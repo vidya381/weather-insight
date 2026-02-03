@@ -332,19 +332,19 @@ function TrendAnalysis({ cityName }) {
       <div className="trend-stats">
         <h4>Historical Statistics</h4>
         <div className="stats-grid">
-          <div className="stat-item">
+          <div className="ml-stat-item">
             <span className="stat-label">Average</span>
             <span className="stat-value">{trends.statistics?.mean?.toFixed(1)}°C</span>
           </div>
-          <div className="stat-item">
+          <div className="ml-stat-item">
             <span className="stat-label">Minimum</span>
             <span className="stat-value">{trends.statistics?.min?.toFixed(1)}°C</span>
           </div>
-          <div className="stat-item">
+          <div className="ml-stat-item">
             <span className="stat-label">Maximum</span>
             <span className="stat-value">{trends.statistics?.max?.toFixed(1)}°C</span>
           </div>
-          <div className="stat-item">
+          <div className="ml-stat-item">
             <span className="stat-label">Std Dev</span>
             <span className="stat-value">{trends.statistics?.std_dev?.toFixed(1)}°C</span>
           </div>

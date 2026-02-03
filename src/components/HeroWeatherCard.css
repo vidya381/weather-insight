@@ -200,7 +200,6 @@ body.dark-mode .hero-weather-desc {
 
 .stat-badge {
   background: rgba(59, 130, 246, 0.08);
-  border: 1px solid rgba(59, 130, 246, 0.15);
   border-radius: 10px;
   padding: 0.625rem 1rem;
   display: flex;
@@ -212,7 +211,6 @@ body.dark-mode .hero-weather-desc {
 
 body.dark-mode .stat-badge {
   background: rgba(96, 165, 250, 0.1);
-  border-color: rgba(96, 165, 250, 0.18);
 }
 
 .stat-value {

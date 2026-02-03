@@ -451,30 +451,26 @@ body.dark-mode .trend-stats h4 {
   gap: 1rem;
 }
 
-.stat-item {
+.ml-stat-item {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.75rem;
   background: rgba(59, 130, 246, 0.05);
-  border: 1px solid rgba(59, 130, 246, 0.1);
   border-radius: 8px;
   transition: all 0.2s;
 }
 
-.stat-item:hover {
+.ml-stat-item:hover {
   background: rgba(59, 130, 246, 0.08);
-  border-color: rgba(59, 130, 246, 0.2);
 }
 
-body.dark-mode .stat-item {
+body.dark-mode .ml-stat-item {
   background: rgba(96, 165, 250, 0.08);
-  border-color: rgba(96, 165, 250, 0.15);
 }
 
-body.dark-mode .stat-item:hover {
+body.dark-mode .ml-stat-item:hover {
   background: rgba(96, 165, 250, 0.12);
-  border-color: rgba(96, 165, 250, 0.25);
 }
 
 /* Pattern Styles */
