@@ -147,12 +147,12 @@
 }
 
 .header-btn-ml:hover {
-  border-color: rgba(139, 92, 246, 0.6);
-  color: #A78BFA;
+  border-color: rgba(96, 165, 250, 0.6);
+  color: #60A5FA;
 }
 
 .header-btn-ml:hover svg {
-  color: #A78BFA;
+  color: #60A5FA;
 }
 
 .header-btn-home:hover {
@@ -229,13 +229,13 @@ body.dark-mode .btn-secondary:hover {
 .dashboard-content h2 {
   font-size: 2rem;
   font-weight: 700;
-  color: #111827;
+  color: #60A5FA;
   margin: 0 0 0.5rem 0;
   letter-spacing: -0.02em;
 }
 
 body.dark-mode .dashboard-content h2 {
-  color: #E1E1E6;
+  color: #60A5FA;
 }
 
 .dashboard-content p {
@@ -316,12 +316,12 @@ body.dark-mode .close-search-btn:hover {
 .favorites-section h2 {
   font-size: 1.75rem !important;
   font-weight: 700 !important;
-  color: #111827 !important;
+  color: #60A5FA !important;
   letter-spacing: -0.02em !important;
 }
 
 body.dark-mode .favorites-section h2 {
-  color: #E8E8ED !important;
+  color: #60A5FA !important;
 }
 
 .favorites-scroll {

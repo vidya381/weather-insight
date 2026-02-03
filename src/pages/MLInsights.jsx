@@ -88,7 +88,6 @@ export default function MLInsights() {
           {!loading && favorites.length > 0 && (
             <div className="ml-insights-header">
               <div className="ml-title-section">
-                <IoAnalytics className="ml-title-icon" size={32} />
                 <h2>ML Insights</h2>
               </div>
               <div className="city-selector">

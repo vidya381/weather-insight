@@ -123,29 +123,38 @@ function TrendAnalysis({ cityName }) {
             <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="tempGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                  <stop offset="5%" stopColor="#60A5FA" stopOpacity={0.8}/>
+                  <stop offset="95%" stopColor="#60A5FA" stopOpacity={0.1}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" opacity={0.3} />
-              <XAxis dataKey="day" stroke="#6b7280" style={{ fontSize: '0.75rem' }} />
-              <YAxis stroke="#6b7280" style={{ fontSize: '0.75rem' }} unit="°C" />
+              <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.15} />
+              <XAxis
+                dataKey="day"
+                stroke="currentColor"
+                style={{ fontSize: '0.75rem', fill: 'var(--text-secondary)' }}
+              />
+              <YAxis
+                stroke="currentColor"
+                style={{ fontSize: '0.75rem', fill: 'var(--text-secondary)' }}
+                unit="°C"
+              />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #e5e5e5',
+                  backgroundColor: 'var(--tooltip-bg, #ffffff)',
+                  border: '1px solid var(--tooltip-border, #e5e5e5)',
                   borderRadius: '8px',
                   boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                  color: 'var(--text-primary)',
                 }}
               />
               <Area
                 type="monotone"
                 dataKey="temperature"
-                stroke="#3b82f6"
+                stroke="#60A5FA"
                 strokeWidth={3}
                 fill="url(#tempGradient)"
-                dot={{ fill: '#3b82f6', r: 5, strokeWidth: 2, stroke: '#ffffff' }}
-                activeDot={{ r: 7 }}
+                dot={{ fill: '#60A5FA', r: 5, strokeWidth: 2, stroke: '#ffffff' }}
+                activeDot={{ r: 7, fill: '#3b82f6' }}
               />
             </AreaChart>
           </ResponsiveContainer>

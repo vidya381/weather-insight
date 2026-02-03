@@ -8,28 +8,18 @@
 .ml-title-section {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-}
-
-.ml-title-icon {
-  color: #A78BFA;
-  filter: drop-shadow(0 2px 8px rgba(167, 139, 250, 0.4));
-  transition: all 0.3s;
-}
-
-.ml-title-section:hover .ml-title-icon {
-  filter: drop-shadow(0 3px 10px rgba(167, 139, 250, 0.6));
 }
 
 .ml-insights-header h2 {
   margin: 0;
   font-size: 1.75rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #E8E8ED 0%, #A78BFA 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #60A5FA;
   letter-spacing: -0.02em;
+}
+
+body.dark-mode .ml-insights-header h2 {
+  color: #60A5FA;
 }
 
 .city-selector {
@@ -49,7 +39,7 @@
   font-size: 0.875rem;
   color: #E8E8ED;
   background: rgba(42, 47, 60, 0.8);
-  border: 1px solid rgba(167, 139, 250, 0.3);
+  border: 1px solid rgba(96, 165, 250, 0.3);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
@@ -57,14 +47,14 @@
 }
 
 .ml-select:hover {
-  border-color: rgba(167, 139, 250, 0.5);
+  border-color: rgba(96, 165, 250, 0.5);
   background: rgba(42, 47, 60, 0.95);
 }
 
 .ml-select:focus {
   outline: none;
-  border-color: #A78BFA;
-  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1);
+  border-color: #60A5FA;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
 }
 
 .ml-insights-content {
@@ -75,17 +65,17 @@
 
 /* Empty State ML Icon */
 .empty-ml-icon {
-  color: #A78BFA;
-  filter: drop-shadow(0 4px 16px rgba(167, 139, 250, 0.6));
+  color: #60A5FA;
+  filter: drop-shadow(0 4px 16px rgba(96, 165, 250, 0.6));
   animation: floatIcon 3s ease-in-out infinite, mlPulse 2s ease-in-out infinite;
 }
 
 @keyframes mlPulse {
   0%, 100% {
-    filter: drop-shadow(0 4px 16px rgba(167, 139, 250, 0.6));
+    filter: drop-shadow(0 4px 16px rgba(96, 165, 250, 0.6));
   }
   50% {
-    filter: drop-shadow(0 6px 24px rgba(167, 139, 250, 0.8));
+    filter: drop-shadow(0 6px 24px rgba(96, 165, 250, 0.8));
   }
 }
 
@@ -101,17 +91,29 @@
 .btn-primary {
   padding: 0.75rem 1.5rem;
   font-size: 0.95rem;
-  font-weight: 500;
+  font-weight: 600;
   color: #ffffff;
   background-color: #3b82f6;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.15s;
+  transition: all 0.15s;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
 }
 
 .btn-primary:hover {
   background-color: #2563eb;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transform: translateY(-1px);
+}
+
+body.dark-mode .btn-primary {
+  background-color: #60A5FA;
+  color: #0D0D0D;
+}
+
+body.dark-mode .btn-primary:hover {
+  background-color: #3b82f6;
 }
 
 /* Responsive Design */
@@ -124,11 +126,6 @@
 
   .ml-insights-header h2 {
     font-size: 1.5rem;
-  }
-
-  .ml-title-icon {
-    width: 28px;
-    height: 28px;
   }
 
   .city-selector {
@@ -146,11 +143,6 @@
 @media (max-width: 640px) {
   .ml-insights-header h2 {
     font-size: 1.25rem;
-  }
-
-  .ml-title-icon {
-    width: 24px;
-    height: 24px;
   }
 
   .city-selector label {
