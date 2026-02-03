@@ -9,12 +9,34 @@ function TrendAnalysis({ cityName }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [days, setDays] = useState(90);
+  const [chartHeight, setChartHeight] = useState(320);
 
   useEffect(() => {
     if (cityName) {
       loadTrends();
     }
   }, [cityName, days]);
+
+  // Handle responsive chart height
+  useEffect(() => {
+    const updateChartHeight = () => {
+      if (window.innerWidth <= 320) {
+        setChartHeight(220);
+      } else if (window.innerWidth <= 375) {
+        setChartHeight(240);
+      } else if (window.innerWidth <= 640) {
+        setChartHeight(260);
+      } else if (window.innerWidth <= 768) {
+        setChartHeight(280);
+      } else {
+        setChartHeight(320);
+      }
+    };
+
+    updateChartHeight();
+    window.addEventListener('resize', updateChartHeight);
+    return () => window.removeEventListener('resize', updateChartHeight);
+  }, []);
 
   const loadTrends = async () => {
     setLoading(true);
@@ -205,7 +227,7 @@ function TrendAnalysis({ cityName }) {
       {chartData.length > 0 && (
         <div className="trend-chart">
           <h4>Temperature Trend Analysis & 7-Day Forecast</h4>
-          <ResponsiveContainer width="100%" height={320}>
+          <ResponsiveContainer width="100%" height={chartHeight}>
             <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="predictionGradient" x1="0" y1="0" x2="0" y2="1">

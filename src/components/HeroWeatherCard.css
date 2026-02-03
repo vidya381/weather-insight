@@ -583,3 +583,79 @@ body.dark-mode .hourly-temp {
     font-size: 0.85rem;
   }
 }
+
+/* Extra small phones (375px and below) */
+@media (max-width: 375px) {
+  .hero-temp {
+    font-size: 3rem;
+  }
+
+  .weather-icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .hero-stats {
+    gap: 0.75rem;
+  }
+
+  .stat-badge {
+    padding: 0.4rem 0.6rem;
+    min-width: 55px;
+  }
+
+  .stat-value {
+    font-size: 1.1rem;
+  }
+
+  .hourly-item {
+    min-width: 75px;
+    padding: 0.875rem 0.625rem;
+  }
+
+  .hourly-temp {
+    font-size: 0.95rem;
+  }
+
+  .hourly-time {
+    font-size: 0.8rem;
+  }
+}
+
+/* Extra extra small phones (320px) */
+@media (max-width: 320px) {
+  .hero-temp {
+    font-size: 2.75rem;
+  }
+
+  .weather-icon {
+    width: 55px;
+    height: 55px;
+  }
+
+  .hero-stats {
+    gap: 0.5rem;
+  }
+
+  .stat-badge {
+    padding: 0.35rem 0.5rem;
+    min-width: 50px;
+  }
+
+  .stat-value {
+    font-size: 1rem;
+  }
+
+  .hourly-item {
+    min-width: 70px;
+    padding: 0.75rem 0.5rem;
+  }
+
+  .hourly-temp {
+    font-size: 0.9rem;
+  }
+
+  .hourly-time {
+    font-size: 0.75rem;
+  }
+}

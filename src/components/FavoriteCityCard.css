@@ -52,8 +52,8 @@ body.dark-mode .favorite-city-card.error:hover {
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 1px solid #e5e5e5;
   background: #ffffff;
@@ -311,5 +311,49 @@ body.dark-mode .retry-small:hover {
 
   .temp-range {
     font-size: 1rem;
+  }
+}
+
+/* Small phones (375px and below) */
+@media (max-width: 375px) {
+  .favorite-city-card {
+    width: 160px;
+  }
+
+  .city-card-name {
+    font-size: 0.95rem;
+  }
+
+  .temp-main {
+    font-size: 1.65rem;
+  }
+}
+
+/* Extra small phones (320px) */
+@media (max-width: 320px) {
+  .favorite-city-card {
+    width: 145px;
+    padding: 0.875rem;
+  }
+
+  .city-card-content {
+    gap: 0.5rem;
+    min-height: 100px;
+  }
+
+  .city-card-name {
+    font-size: 0.9rem;
+  }
+
+  .city-card-country {
+    font-size: 0.7rem;
+  }
+
+  .temp-main {
+    font-size: 1.5rem;
+  }
+
+  .temp-range {
+    font-size: 0.9rem;
   }
 }

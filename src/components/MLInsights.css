@@ -772,3 +772,79 @@ body.dark-mode .info-text {
     font-size: 0.875rem;
   }
 }
+
+/* Small phones (375px and below) */
+@media (max-width: 375px) {
+  .ml-section {
+    padding: 0.75rem;
+  }
+
+  .ml-header h3 {
+    font-size: 0.95rem;
+  }
+
+  .anomaly-list,
+  .pattern-list {
+    max-height: 400px;
+  }
+
+  .stat-value {
+    font-size: 1.05rem;
+  }
+
+  .value-number {
+    font-size: 0.95rem;
+  }
+}
+
+/* Extra small phones (320px) */
+@media (max-width: 320px) {
+  .ml-section {
+    padding: 0.625rem;
+    border-radius: 10px;
+  }
+
+  .ml-header {
+    gap: 0.75rem;
+  }
+
+  .ml-header h3 {
+    font-size: 0.9rem;
+  }
+
+  .ml-select {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+    min-width: 140px;
+  }
+
+  .anomaly-list,
+  .pattern-list {
+    max-height: 350px;
+    gap: 0.75rem;
+  }
+
+  .anomaly-details,
+  .pattern-characteristics {
+    gap: 0.5rem;
+  }
+
+  .stat-label,
+  .char-label {
+    font-size: 0.7rem;
+  }
+
+  .stat-value {
+    font-size: 1rem;
+  }
+
+  .value-number,
+  .char-value {
+    font-size: 0.9rem;
+  }
+
+  .trend-chart h4,
+  .trend-stats h4 {
+    font-size: 0.8rem;
+  }
+}
