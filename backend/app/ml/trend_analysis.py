@@ -119,12 +119,14 @@ def analyze_trends(
         first_timestamp = weather_records[0].timestamp
         x_values = []
         y_values = []
+        valid_records = []  # Keep track of records with valid temperature
 
         for record in weather_records:
             if record.temperature is not None:
                 days_diff = (record.timestamp - first_timestamp).total_seconds() / 86400  # Convert to days
                 x_values.append(days_diff)
                 y_values.append(record.temperature)
+                valid_records.append(record)
 
         if len(x_values) < 3:
             logger.warning(f"Insufficient temperature data for {city_name}")
@@ -154,6 +156,26 @@ def analyze_trends(
             future_date = weather_records[-1].timestamp + timedelta(days=future_day)
             predictions[future_date.strftime("%Y-%m-%d")] = round(pred_y, 2)
 
+        # Prepare historical data (sample to max 90 points for performance)
+        logger.info(f"DEBUG: Starting historical data prep. x_values length: {len(x_values)}, valid_records length: {len(valid_records)}")
+
+        sample_step = max(1, len(x_values) // 90)
+        historical_data = []
+
+        try:
+            for i in range(0, len(x_values), sample_step):
+                # Use valid_records which matches x_values/y_values indices
+                record = valid_records[i]
+                historical_data.append({
+                    "date": record.timestamp.strftime("%Y-%m-%d"),
+                    "temperature": round(y_values[i], 2),
+                    "x": x_values[i],
+                })
+        except Exception as e:
+            logger.error(f"ERROR building historical_data: {e}")
+
+        logger.info(f"✅ Prepared {len(historical_data)} historical data points for {city_name}")
+
         # Create result
         result = {
             "city": city_name,
@@ -161,6 +183,7 @@ def analyze_trends(
             "analysis_period_days": days,
             "trend_direction": trend_direction,
             "slope": round(slope, 4),
+            "intercept": round(intercept, 2),  # Add intercept for frontend trend calculation
             "slope_interpretation": f"{'Increasing' if slope > 0 else 'Decreasing'} by {abs(slope):.2f}°C per day",
             "r_squared": round(r_squared, 4),
             "confidence": "high" if r_squared > 0.7 else "medium" if r_squared > 0.4 else "low",
@@ -171,6 +194,7 @@ def analyze_trends(
                 "std_dev": round(std_dev, 2),
                 "range": round(max_value - min_value, 2)
             },
+            "historical_data": historical_data,
             "predictions_7_day": predictions
         }
 

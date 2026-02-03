@@ -393,6 +393,40 @@ body.dark-mode .trend-chart h4 {
   color: #E1E1E6;
 }
 
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+body.dark-mode .legend-item {
+  color: #9CA3AF;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-line {
+  width: 20px;
+  height: 0;
+  border-top: 2px dashed;
+  flex-shrink: 0;
+}
+
 .trend-stats h4 {
   font-size: 0.95rem;
   font-weight: 600;
