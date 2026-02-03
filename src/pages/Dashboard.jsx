@@ -101,13 +101,18 @@ export default function Dashboard() {
     }
   };
 
-  const handleRemoveFavorite = async () => {
-    const updatedFavorites = await loadFavorites();
+  const handleRemoveFavorite = async (removedCity) => {
+    // Optimistic update - remove immediately from UI
+    const updatedFavorites = favorites.filter(city => city.id !== removedCity.id);
+    setFavorites(updatedFavorites);
+
     // If the removed city was the selected one, select the first available
-    if (updatedFavorites.length > 0) {
-      setSelectedCity(updatedFavorites[0]);
-    } else {
-      setSelectedCity(null);
+    if (selectedCity?.id === removedCity.id) {
+      if (updatedFavorites.length > 0) {
+        setSelectedCity(updatedFavorites[0]);
+      } else {
+        setSelectedCity(null);
+      }
     }
   };
 

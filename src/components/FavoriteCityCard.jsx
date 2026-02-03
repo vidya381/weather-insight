@@ -45,6 +45,10 @@ function FavoriteCityCard({ city, onRemove, onSelect, isAuthenticated = true }) 
 
   const handleRemove = async (e) => {
     e.stopPropagation();
+
+    // Optimistically update UI immediately
+    if (onRemove) onRemove(city);
+
     try {
       if (isAuthenticated) {
         // Remove from API for authenticated users
@@ -53,9 +57,9 @@ function FavoriteCityCard({ city, onRemove, onSelect, isAuthenticated = true }) 
         // Remove from localStorage for guests
         removeGuestCity(city.id);
       }
-      if (onRemove) onRemove();
     } catch (err) {
       console.error('Failed to remove favorite:', err);
+      // Could add error handling here to revert if needed
     }
   };
 
