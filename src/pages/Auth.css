@@ -42,9 +42,12 @@ body.dark-mode .auth-box h2 {
 }
 
 body.dark-mode .error-message {
-  background-color: #2A1515;
-  border-color: #4A2020;
-  color: #F87171;
+  background: rgba(127, 29, 29, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(185, 28, 28, 0.5);
+  color: #fca5a5;
+  box-shadow: 0 4px 12px rgba(127, 29, 29, 0.3);
 }
 
 body.dark-mode .form-group label {
@@ -114,13 +117,15 @@ body.dark-mode .auth-footer a {
 }
 
 .error-message {
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #dc2626;
-  padding: 0.75rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
+  background-color: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
   margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.1);
 }
 
 .form-group {
@@ -213,7 +218,7 @@ body.dark-mode .auth-footer a {
   }
 
   .auth-box h2 {
-    font-size: 0.875rem;
+    font-size: 1rem;
   }
 
   .form-group input {
@@ -245,7 +250,7 @@ body.dark-mode .auth-footer a {
   }
 
   .auth-box h2 {
-    font-size: 0.8125rem;
+    font-size: 0.9375rem;
   }
 
   .form-group input {
@@ -275,7 +280,7 @@ body.dark-mode .auth-footer a {
   }
 
   .auth-box h2 {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
   }
 
   .form-group {
