@@ -7,16 +7,20 @@ import HeroWeatherCard from '../components/HeroWeatherCard';
 import DailyForecast from '../components/DailyForecast';
 import FavoriteCityCard from '../components/FavoriteCityCard';
 import AddCityCard from '../components/AddCityCard';
-import ThemeToggle from '../components/ThemeToggle';
+import WeatherBackground from '../components/WeatherBackground';
+import ProfileDropdown from '../components/ProfileDropdown';
+import ProfileEditModal from '../components/ProfileEditModal';
 import Spinner from '../components/Spinner';
+import { IoCloud, IoAnalytics, IoSparkles, IoTrendingUp, IoLocationSharp, IoSunny } from 'react-icons/io5';
 import './Dashboard.css';
 
 export default function Dashboard() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
   const [selectedCity, setSelectedCity] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
+  const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const searchSectionRef = useRef(null);
@@ -34,10 +38,14 @@ export default function Dashboard() {
       // Set first city as selected hero city
       if (data.length > 0 && !selectedCity) {
         setSelectedCity(data[0]);
+      } else if (data.length === 0) {
+        setSelectedCity(null);
       }
+      return data;
     } catch (err) {
       console.error('Failed to load favorites:', err);
       setError('Failed to load your favorite cities. Please try again.');
+      return [];
     } finally {
       setLoading(false);
     }
@@ -59,10 +67,10 @@ export default function Dashboard() {
   };
 
   const handleRemoveFavorite = async () => {
-    await loadFavorites();
+    const updatedFavorites = await loadFavorites();
     // If the removed city was the selected one, select the first available
-    if (favorites.length > 0) {
-      setSelectedCity(favorites[0]);
+    if (updatedFavorites.length > 0) {
+      setSelectedCity(updatedFavorites[0]);
     } else {
       setSelectedCity(null);
     }
@@ -80,23 +88,41 @@ export default function Dashboard() {
     }, 100);
   };
 
+  const handleEditProfile = () => {
+    setShowProfileEdit(true);
+  };
+
+  const handleProfileUpdateSuccess = (updatedUser) => {
+    updateUser(updatedUser);
+  };
+
   return (
     <div className="dashboard">
+      {/* Dynamic weather background */}
+      <WeatherBackground city={selectedCity} />
+
       <header className="dashboard-header">
         <div className="header-content">
-          <h1>WeatherInsight</h1>
+          <div className="logo-section" onClick={() => navigate('/dashboard')}>
+            <div className="logo-icon-wrapper">
+              <IoCloud className="logo-icon logo-cloud" size={32} />
+              <IoSparkles className="logo-icon logo-sparkle" size={16} />
+            </div>
+            <h1>WeatherInsight</h1>
+          </div>
           <div className="header-actions">
             <button
               onClick={() => navigate('/ml-insights')}
-              className="btn-secondary"
+              className="header-btn header-btn-ml"
             >
-              ML Insights
+              <IoAnalytics size={20} />
+              <span>ML Insights</span>
             </button>
-            <span className="user-name">{user?.username}</span>
-            <ThemeToggle />
-            <button onClick={handleLogout} className="btn-secondary">
-              Logout
-            </button>
+            <ProfileDropdown
+              username={user?.username}
+              onLogout={handleLogout}
+              onEditProfile={handleEditProfile}
+            />
           </div>
         </div>
       </header>
@@ -140,14 +166,33 @@ export default function Dashboard() {
 
           {!loading && !error && favorites.length === 0 && (
             <div className="hero-section">
-              <div className="empty-message">
-                <h3>Welcome to WeatherInsight</h3>
-                <p>No favorite cities yet.</p>
-                <p className="empty-hint">Click the button below to add your first city.</p>
+              <div className="empty-state">
+                <div className="empty-icon-wrapper">
+                  <IoSunny className="empty-weather-icon" size={80} />
+                </div>
+                <h2 className="empty-title">Welcome to WeatherInsight</h2>
+                <p className="empty-subtitle">
+                  Track weather for your favorite cities in one beautiful dashboard
+                </p>
+
+                <div className="empty-features">
+                  <div className="empty-feature">
+                    <IoSparkles size={24} />
+                    <span>Real-time Updates</span>
+                  </div>
+                  <div className="empty-feature">
+                    <IoTrendingUp size={24} />
+                    <span>7-Day Forecasts</span>
+                  </div>
+                  <div className="empty-feature">
+                    <IoLocationSharp size={24} />
+                    <span>Multiple Cities</span>
+                  </div>
+                </div>
+
                 <button
-                  className="btn-primary"
+                  className="btn-primary btn-cta"
                   onClick={handleAddCityClick}
-                  style={{ marginTop: '1rem' }}
                 >
                   Add Your First City
                 </button>
@@ -185,6 +230,15 @@ export default function Dashboard() {
           )}
         </div>
       </main>
+
+      {/* Profile Edit Modal */}
+      {showProfileEdit && (
+        <ProfileEditModal
+          user={user}
+          onClose={() => setShowProfileEdit(false)}
+          onSuccess={handleProfileUpdateSuccess}
+        />
+      )}
     </div>
   );
 }

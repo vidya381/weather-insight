@@ -1,0 +1,113 @@
+.profile-dropdown {
+  position: relative;
+}
+
+.profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  background: rgba(54, 58, 79, 0.5);
+  border: 1px solid rgba(66, 71, 86, 0.6);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #C1C1C6;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.profile-trigger:hover {
+  background: rgba(54, 58, 79, 0.7);
+  border-color: rgba(96, 165, 250, 0.4);
+}
+
+.user-icon {
+  color: #60A5FA;
+}
+
+.user-name {
+  color: #C1C1C6;
+}
+
+.chevron-icon {
+  color: #8B8B8F;
+  transition: transform 0.2s;
+}
+
+.chevron-icon.open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 180px;
+  background: rgba(42, 47, 60, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(66, 71, 86, 0.6);
+  border-radius: 12px;
+  padding: 0.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  animation: dropdownFadeIn 0.2s ease-out;
+  z-index: 1000;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #C1C1C6;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+}
+
+.dropdown-item:hover {
+  background: rgba(54, 58, 79, 0.8);
+  color: #E8E8ED;
+}
+
+.dropdown-item svg {
+  color: #8B8B8F;
+  transition: color 0.15s;
+}
+
+.dropdown-item:hover svg {
+  color: #60A5FA;
+}
+
+.dropdown-item-logout:hover {
+  background: rgba(74, 32, 32, 0.6);
+  color: #F87171;
+}
+
+.dropdown-item-logout:hover svg {
+  color: #F87171;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: rgba(66, 71, 86, 0.4);
+  margin: 0.375rem 0;
+}

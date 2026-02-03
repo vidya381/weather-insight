@@ -1,16 +1,39 @@
+/* CSS Variables for chart theming */
 .ml-section {
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --tooltip-bg: #ffffff;
+  --tooltip-border: #e5e5e5;
+
   background: #ffffff;
   border: 1px solid #e5e5e5;
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.ml-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 body.dark-mode .ml-section {
-  background: #1A1A1A;
-  border-color: #2A2A2A;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --text-primary: #E1E1E6;
+  --text-secondary: #8B8B8F;
+  --tooltip-bg: rgba(42, 47, 60, 0.95);
+  --tooltip-border: rgba(66, 71, 86, 0.8);
+
+  background: rgba(54, 58, 79, 0.6);
+  border-color: rgba(66, 71, 86, 0.5);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(16px);
+}
+
+body.dark-mode .ml-section:hover {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+  border-color: rgba(66, 71, 86, 0.7);
 }
 
 .ml-header {
@@ -37,19 +60,30 @@ body.dark-mode .ml-header h3 {
   color: #374151;
   background: #ffffff;
   border: 1px solid #d1d5db;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ml-select:hover {
+  border-color: rgba(96, 165, 250, 0.4);
 }
 
 body.dark-mode .ml-select {
-  color: #C1C1C6;
-  background: #1A1A1A;
-  border-color: #2A2A2A;
+  color: #E8E8ED;
+  background: rgba(42, 47, 60, 0.8);
+  border-color: rgba(96, 165, 250, 0.3);
+}
+
+body.dark-mode .ml-select:hover {
+  border-color: rgba(96, 165, 250, 0.5);
+  background: rgba(42, 47, 60, 0.95);
 }
 
 .ml-select:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: #60A5FA;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
 }
 
 .ml-loading,
@@ -116,12 +150,24 @@ body.dark-mode .ml-empty-hint {
 
 .anomaly-item {
   border: 1px solid #e5e5e5;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 1rem;
+  transition: all 0.2s;
+}
+
+.anomaly-item:hover {
+  border-color: rgba(220, 38, 38, 0.3);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.1);
 }
 
 body.dark-mode .anomaly-item {
-  border-color: #2A2A2A;
+  border-color: rgba(66, 71, 86, 0.5);
+  background: rgba(42, 47, 60, 0.3);
+}
+
+body.dark-mode .anomaly-item:hover {
+  border-color: rgba(220, 38, 38, 0.4);
+  box-shadow: 0 2px 12px rgba(220, 38, 38, 0.15);
 }
 
 .anomaly-header {
@@ -134,12 +180,13 @@ body.dark-mode .anomaly-item {
 .anomaly-severity {
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 600;
   color: #ffffff;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .anomaly-date {
@@ -191,13 +238,13 @@ body.dark-mode .value-number {
 .anomaly-description {
   margin: 0;
   padding-top: 0.75rem;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
   font-size: 0.875rem;
   color: #6b7280;
 }
 
 body.dark-mode .anomaly-description {
-  border-top-color: #252525;
+  border-top-color: rgba(255, 255, 255, 0.08);
   color: #8B8B8F;
 }
 
@@ -214,12 +261,25 @@ body.dark-mode .anomaly-description {
   flex-direction: column;
   gap: 0.5rem;
   padding: 1rem;
-  background: #f9fafb;
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.1);
   border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.trend-stat:hover {
+  background: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.2);
 }
 
 body.dark-mode .trend-stat {
-  background: #151515;
+  background: rgba(96, 165, 250, 0.08);
+  border-color: rgba(96, 165, 250, 0.15);
+}
+
+body.dark-mode .trend-stat:hover {
+  background: rgba(96, 165, 250, 0.12);
+  border-color: rgba(96, 165, 250, 0.25);
 }
 
 .stat-label {
@@ -245,15 +305,17 @@ body.dark-mode .stat-value {
 
 .trend-interpretation {
   padding: 1rem;
-  background: #f9fafb;
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.1);
   border-left: 3px solid #3b82f6;
-  border-radius: 6px;
+  border-radius: 8px;
   margin-bottom: 1.5rem;
 }
 
 body.dark-mode .trend-interpretation {
-  background: #151515;
-  border-left-color: #3B82F6;
+  background: rgba(96, 165, 250, 0.08);
+  border-color: rgba(96, 165, 250, 0.15);
+  border-left-color: #60A5FA;
 }
 
 .trend-interpretation p {
@@ -302,6 +364,26 @@ body.dark-mode .trend-stats h4 {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  padding: 0.75rem;
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.stat-item:hover {
+  background: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+body.dark-mode .stat-item {
+  background: rgba(96, 165, 250, 0.08);
+  border-color: rgba(96, 165, 250, 0.15);
+}
+
+body.dark-mode .stat-item:hover {
+  background: rgba(96, 165, 250, 0.12);
+  border-color: rgba(96, 165, 250, 0.25);
 }
 
 /* Pattern Styles */
@@ -314,12 +396,24 @@ body.dark-mode .trend-stats h4 {
 
 .pattern-item {
   border: 1px solid #e5e5e5;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 1rem;
+  transition: all 0.2s;
+}
+
+.pattern-item:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
 }
 
 body.dark-mode .pattern-item {
-  border-color: #2A2A2A;
+  border-color: rgba(66, 71, 86, 0.5);
+  background: rgba(42, 47, 60, 0.3);
+}
+
+body.dark-mode .pattern-item:hover {
+  border-color: rgba(96, 165, 250, 0.4);
+  box-shadow: 0 2px 12px rgba(96, 165, 250, 0.15);
 }
 
 .pattern-header {
@@ -332,10 +426,21 @@ body.dark-mode .pattern-item {
 .pattern-cluster {
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 600;
   color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.pattern-count {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+body.dark-mode .pattern-count {
+  color: #8B8B8F;
 }
 
 .pattern-date {
@@ -353,11 +458,11 @@ body.dark-mode .pattern-date {
   gap: 1rem;
   margin-bottom: 0.75rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 body.dark-mode .pattern-characteristics {
-  border-bottom-color: #252525;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
 .char-item {
@@ -410,15 +515,28 @@ body.dark-mode .similar-label {
 .similar-date {
   display: inline-block;
   padding: 0.25rem 0.5rem;
-  background: #f3f4f6;
-  border-radius: 4px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 6px;
   font-size: 0.75rem;
   color: #374151;
+  transition: all 0.2s;
+}
+
+.similar-date:hover {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.3);
 }
 
 body.dark-mode .similar-date {
-  background: #252525;
+  background: rgba(96, 165, 250, 0.12);
+  border-color: rgba(96, 165, 250, 0.25);
   color: #C1C1C6;
+}
+
+body.dark-mode .similar-date:hover {
+  background: rgba(96, 165, 250, 0.18);
+  border-color: rgba(96, 165, 250, 0.35);
 }
 
 .similar-more {
@@ -434,12 +552,14 @@ body.dark-mode .similar-more {
 
 .pattern-info {
   padding: 1rem;
-  background: #f9fafb;
-  border-radius: 6px;
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  border-radius: 8px;
 }
 
 body.dark-mode .pattern-info {
-  background: #151515;
+  background: rgba(96, 165, 250, 0.08);
+  border-color: rgba(96, 165, 250, 0.15);
 }
 
 .info-text {
@@ -480,7 +600,7 @@ body.dark-mode .info-text {
 @media (max-width: 640px) {
   .ml-section {
     padding: 1rem;
-    border-radius: 8px;
+    border-radius: 12px;
   }
 
   .ml-header h3 {

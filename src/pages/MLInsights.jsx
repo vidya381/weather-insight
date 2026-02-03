@@ -5,17 +5,21 @@ import { citiesAPI } from '../api/cities';
 import AnomalyDetection from '../components/AnomalyDetection';
 import TrendAnalysis from '../components/TrendAnalysis';
 import PatternClustering from '../components/PatternClustering';
-import ThemeToggle from '../components/ThemeToggle';
+import ProfileDropdown from '../components/ProfileDropdown';
+import ProfileEditModal from '../components/ProfileEditModal';
+import WeatherBackground from '../components/WeatherBackground';
 import Spinner from '../components/Spinner';
+import { IoCloud, IoSparkles, IoHome, IoAnalytics, IoTrendingUp, IoBulb, IoGitNetwork } from 'react-icons/io5';
 import './Dashboard.css';
 import './MLInsights.css';
 
 export default function MLInsights() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
   const [selectedCity, setSelectedCity] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showProfileEdit, setShowProfileEdit] = useState(false);
 
   useEffect(() => {
     loadFavorites();
@@ -40,32 +44,52 @@ export default function MLInsights() {
     navigate('/login');
   };
 
+  const handleEditProfile = () => {
+    setShowProfileEdit(true);
+  };
+
+  const handleProfileUpdateSuccess = (updatedUser) => {
+    updateUser(updatedUser);
+  };
+
   return (
     <div className="dashboard">
+      {/* Dynamic weather background */}
+      <WeatherBackground city={selectedCity} />
+
       <header className="dashboard-header">
         <div className="header-content">
-          <h1>WeatherInsight</h1>
+          <div className="logo-section" onClick={() => navigate('/dashboard')}>
+            <div className="logo-icon-wrapper">
+              <IoCloud className="logo-icon logo-cloud" size={32} />
+              <IoSparkles className="logo-icon logo-sparkle" size={16} />
+            </div>
+            <h1>WeatherInsight</h1>
+          </div>
           <div className="header-actions">
             <button
               onClick={() => navigate('/dashboard')}
-              className="btn-secondary"
+              className="header-btn header-btn-home"
             >
-              Dashboard
+              <IoHome size={20} />
+              <span>Dashboard</span>
             </button>
-            <span className="user-name">{user?.username}</span>
-            <ThemeToggle />
-            <button onClick={handleLogout} className="btn-secondary">
-              Logout
-            </button>
+            <ProfileDropdown
+              username={user?.username}
+              onLogout={handleLogout}
+              onEditProfile={handleEditProfile}
+            />
           </div>
         </div>
       </header>
 
       <main className="dashboard-main">
         <div className="dashboard-content">
-          <div className="ml-insights-header">
-            <h2>ML Insights</h2>
-            {!loading && favorites.length > 0 && (
+          {!loading && favorites.length > 0 && (
+            <div className="ml-insights-header">
+              <div className="ml-title-section">
+                <h2>ML Insights</h2>
+              </div>
               <div className="city-selector">
                 <label htmlFor="city-select">Select City:</label>
                 <select
@@ -84,24 +108,44 @@ export default function MLInsights() {
                   ))}
                 </select>
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {loading && <Spinner text="Loading ML insights..." />}
 
           {!loading && favorites.length === 0 && (
-            <div className="empty-message">
-              <p>No favorite cities yet.</p>
-              <p className="empty-hint">
-                Add cities to your favorites from the dashboard to see ML insights.
-              </p>
-              <button
-                onClick={() => navigate('/dashboard')}
-                className="btn-primary"
-                style={{ marginTop: '1rem' }}
-              >
-                Go to Dashboard
-              </button>
+            <div className="hero-section">
+              <div className="empty-state">
+                <div className="empty-icon-wrapper">
+                  <IoAnalytics className="empty-ml-icon" size={80} />
+                </div>
+                <h2 className="empty-title">Unlock Weather Insights</h2>
+                <p className="empty-subtitle">
+                  Add favorite cities to unlock powerful ML-driven weather analytics and predictions
+                </p>
+
+                <div className="empty-features">
+                  <div className="empty-feature">
+                    <IoBulb size={24} />
+                    <span>Anomaly Detection</span>
+                  </div>
+                  <div className="empty-feature">
+                    <IoTrendingUp size={24} />
+                    <span>Trend Analysis</span>
+                  </div>
+                  <div className="empty-feature">
+                    <IoGitNetwork size={24} />
+                    <span>Pattern Clustering</span>
+                  </div>
+                </div>
+
+                <button
+                  className="btn-primary btn-cta"
+                  onClick={() => navigate('/dashboard')}
+                >
+                  Add Your First City
+                </button>
+              </div>
             </div>
           )}
 
@@ -114,6 +158,15 @@ export default function MLInsights() {
           )}
         </div>
       </main>
+
+      {/* Profile Edit Modal */}
+      {showProfileEdit && (
+        <ProfileEditModal
+          user={user}
+          onClose={() => setShowProfileEdit(false)}
+          onSuccess={handleProfileUpdateSuccess}
+        />
+      )}
     </div>
   );
 }

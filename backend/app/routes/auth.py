@@ -71,6 +71,24 @@ class MessageResponse(BaseModel):
     message: str
 
 
+class UserUpdate(BaseModel):
+    """User profile update request"""
+    username: Optional[str] = Field(None, min_length=3, max_length=50, description="New username")
+    email: Optional[EmailStr] = Field(None, description="New email address")
+    current_password: Optional[str] = Field(None, description="Current password (required for password change)")
+    new_password: Optional[str] = Field(None, min_length=8, max_length=100, description="New password")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "username": "johndoe_new",
+                "email": "newemail@example.com",
+                "current_password": "oldpassword123",
+                "new_password": "newpassword123"
+            }
+        }
+
+
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def register(user_data: UserRegister, db: Session = Depends(get_db)):
     """
@@ -174,6 +192,85 @@ async def get_current_user_profile(current_user: User = Depends(get_current_user
 
     Returns current user details
     """
+    return UserResponse(
+        id=current_user.id,
+        username=current_user.username,
+        email=current_user.email,
+        created_at=current_user.created_at.isoformat()
+    )
+
+
+@router.put("/me", response_model=UserResponse)
+async def update_profile(
+    update_data: UserUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Update current user profile
+
+    Requires JWT token in Authorization header.
+    Can update username, email, and/or password.
+    Password change requires current_password.
+
+    Returns updated user details
+    """
+    # Check if username is being changed and if it's already taken
+    if update_data.username and update_data.username != current_user.username:
+        existing_user = UserRepository.get_by_username(db, update_data.username)
+        if existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Username already taken"
+            )
+        current_user.username = update_data.username
+
+    # Check if email is being changed and if it's already taken
+    if update_data.email and update_data.email != current_user.email:
+        existing_email = UserRepository.get_by_email(db, update_data.email)
+        if existing_email:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email already registered"
+            )
+        current_user.email = update_data.email
+
+    # Handle password change
+    if update_data.new_password:
+        if not update_data.current_password:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Current password required to change password"
+            )
+
+        # Verify current password
+        if not verify_password(update_data.current_password, current_user.password_hash):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Current password is incorrect"
+            )
+
+        # Check if new password is same as current password
+        if verify_password(update_data.new_password, current_user.password_hash):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="New password must be different from current password"
+            )
+
+        # Update password
+        from app.auth.password import hash_password
+        current_user.password_hash = hash_password(update_data.new_password)
+
+    try:
+        db.commit()
+        db.refresh(current_user)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update profile"
+        )
+
     return UserResponse(
         id=current_user.id,
         username=current_user.username,
