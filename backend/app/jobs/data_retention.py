@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 def cleanup_old_weather_data():
     """
-    Delete weather records older than 90 days
+    Delete weather records older than 180 days
 
     This function is called by the scheduler
     """
@@ -20,8 +20,8 @@ def cleanup_old_weather_data():
     try:
         logger.info("🗑️  Starting data retention cleanup...")
 
-        # Delete records older than 90 days
-        deleted_count = WeatherRepository.delete_old_records(db, days=90)
+        # Delete records older than 180 days
+        deleted_count = WeatherRepository.delete_old_records(db, days=180)
 
         if deleted_count > 0:
             logger.info(f"✅ Deleted {deleted_count} old weather records")

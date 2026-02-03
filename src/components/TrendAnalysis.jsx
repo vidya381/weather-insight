@@ -222,6 +222,8 @@ function TrendAnalysis({ cityName }) {
                 dataKey="date"
                 stroke="currentColor"
                 style={{ fontSize: '0.75rem', fill: 'var(--text-secondary)' }}
+                interval={Math.floor(chartData.length / 6)}
+                tick={{ dy: 10 }}
               />
               <YAxis
                 stroke="currentColor"
