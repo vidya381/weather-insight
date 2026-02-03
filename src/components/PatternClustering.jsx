@@ -8,6 +8,7 @@ function PatternClustering({ cityName }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [days, setDays] = useState(90);
+  const [totalDays, setTotalDays] = useState(0);
 
   useEffect(() => {
     if (cityName) {
@@ -21,6 +22,9 @@ function PatternClustering({ cityName }) {
     try {
       const data = await mlAPI.getPatterns(cityName, days);
       setPatterns(data.patterns);
+      // Calculate total days across all patterns
+      const total = data.patterns.reduce((sum, p) => sum + p.count, 0);
+      setTotalDays(total);
     } catch (err) {
       setError(
         'Not enough data yet. Pattern clustering requires at least 30 days of weather history. ' +
@@ -86,7 +90,7 @@ function PatternClustering({ cityName }) {
                   Cluster {pattern.cluster_id}
                 </span>
                 <span className="pattern-count">
-                  {pattern.count} days
+                  {pattern.count} days ({Math.round((pattern.count / totalDays) * 100)}%)
                 </span>
               </div>
 
@@ -108,6 +112,12 @@ function PatternClustering({ cityName }) {
                     <span className="char-label">Avg Pressure</span>
                     <span className="char-value">
                       {pattern.characteristics.avg_pressure?.toFixed(0)} hPa
+                    </span>
+                  </div>
+                  <div className="char-item">
+                    <span className="char-label">Avg Wind</span>
+                    <span className="char-value">
+                      {pattern.characteristics.avg_wind_speed?.toFixed(1)} m/s
                     </span>
                   </div>
                 </div>
