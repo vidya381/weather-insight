@@ -20,20 +20,14 @@ function TrendAnalysis({ cityName }) {
     setLoading(true);
     setError(null);
     try {
-      console.log(`🔄 Loading trends for ${cityName}, ${days} days...`);
       const data = await mlAPI.getTrends(cityName, 'temperature', days);
-      console.log('✅ API Response received:', data);
-      console.log('📊 historical_data length:', data.historical_data?.length || 0);
-      console.log('📊 First historical point:', data.historical_data?.[0]);
-      console.log('📊 Slope:', data.slope, 'Intercept:', data.intercept);
       setTrends(data);
     } catch (err) {
       setError(
         'Not enough data yet. Trend analysis requires at least 30 days of weather history. ' +
         'Weather is collected hourly - check back in a few days!'
       );
-      console.error('❌ Trend load error:', err);
-      console.error('❌ Error details:', err.response?.data || err.message);
+      console.error('Trend load error:', err);
     } finally {
       setLoading(false);
     }
@@ -51,64 +45,102 @@ function TrendAnalysis({ cityName }) {
     return '#6b7280';
   };
 
+  // Custom tooltip to show only relevant data
+  const CustomTooltip = ({ active, payload }) => {
+    if (!active || !payload || !payload.length) return null;
+
+    const data = payload[0].payload;
+
+    return (
+      <div style={{
+        backgroundColor: 'var(--tooltip-bg, #ffffff)',
+        border: '1px solid var(--tooltip-border, #e5e5e5)',
+        borderRadius: '8px',
+        padding: '8px 12px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        color: 'var(--text-primary)',
+        fontSize: '0.875rem',
+      }}>
+        <div style={{ fontWeight: '600', marginBottom: '4px' }}>{data.date}</div>
+        {data.actual != null && (
+          <div style={{ color: '#3b82f6' }}>
+            Actual: {data.actual.toFixed(1)}°C
+          </div>
+        )}
+        {data.prediction != null && (
+          <div style={{ color: '#f97316' }}>
+            Forecast: {data.prediction.toFixed(1)}°C
+          </div>
+        )}
+        {data.trend != null && (
+          <div style={{ color: '#A78BFA', fontSize: '0.8125rem', marginTop: '2px' }}>
+            Trend: {data.trend.toFixed(1)}°C
+          </div>
+        )}
+      </div>
+    );
+  };
+
   // Prepare combined chart data: historical + trend line + predictions
   const prepareChartData = () => {
     if (!trends) {
-      console.log('No trends data');
       return [];
     }
 
-    console.log('Trends data:', trends);
-
     const data = [];
 
-    // Add historical data with trend line
+    // Add historical data with trend line and confidence bands
     if (trends.historical_data && trends.historical_data.length > 0) {
-      console.log('Processing historical data:', trends.historical_data.length, 'points');
-
-      trends.historical_data.forEach((point, idx) => {
+      trends.historical_data.forEach((point) => {
         // Validate data
         if (!point || point.temperature == null || point.x == null) {
-          console.warn('Invalid historical point at index', idx, point);
           return;
         }
 
         // Calculate trend line value: y = slope * x + intercept
         const trendValue = (trends.slope || 0) * point.x + (trends.intercept || 0);
 
+        const upper = point.trend_upper ? Number(point.trend_upper) : null;
+        const lower = point.trend_lower ? Number(point.trend_lower) : null;
+        const bandWidth = (upper !== null && lower !== null) ? upper - lower : null;
+
         data.push({
           date: new Date(point.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
           actual: Number(point.temperature),
           trend: Number(trendValue.toFixed(2)),
+          confidenceLower: lower,
+          confidenceBand: bandWidth,
           type: 'historical'
         });
       });
-    } else {
-      console.log('No historical data available');
     }
 
-    // Add predictions
-    if (trends.predictions_7_day) {
+    // Add predictions with confidence intervals
+    if (trends.predictions_7_day && trends.prediction_intervals) {
       const lastHistoricalX = trends.historical_data?.length > 0
         ? trends.historical_data[trends.historical_data.length - 1].x
         : 0;
 
-      console.log('Last historical X:', lastHistoricalX);
-
       Object.entries(trends.predictions_7_day).forEach(([date, value], index) => {
         const predictionX = lastHistoricalX + (index + 1);
         const trendValue = (trends.slope || 0) * predictionX + (trends.intercept || 0);
+        const intervals = trends.prediction_intervals[date];
+
+        const upper = intervals?.upper ? Number(intervals.upper) : null;
+        const lower = intervals?.lower ? Number(intervals.lower) : null;
+        const bandWidth = (upper !== null && lower !== null) ? upper - lower : null;
 
         data.push({
           date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
           prediction: Number(value),
           trend: Number(trendValue.toFixed(2)),
+          confidenceLower: lower,
+          confidenceBand: bandWidth,
           type: 'prediction'
         });
       });
     }
 
-    console.log('Final chart data:', data.length, 'points', data.slice(0, 3), '...');
     return data;
   };
 
@@ -180,6 +212,10 @@ function TrendAnalysis({ cityName }) {
                   <stop offset="5%" stopColor="#f97316" stopOpacity={0.3}/>
                   <stop offset="95%" stopColor="#f97316" stopOpacity={0.05}/>
                 </linearGradient>
+                <linearGradient id="confidenceBandGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#A78BFA" stopOpacity={0.15}/>
+                  <stop offset="95%" stopColor="#A78BFA" stopOpacity={0.05}/>
+                </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.15} />
               <XAxis
@@ -192,18 +228,27 @@ function TrendAnalysis({ cityName }) {
                 style={{ fontSize: '0.75rem', fill: 'var(--text-secondary)' }}
                 unit="°C"
               />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: 'var(--tooltip-bg, #ffffff)',
-                  border: '1px solid var(--tooltip-border, #e5e5e5)',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                  color: 'var(--text-primary)',
-                }}
-                formatter={(value) => {
-                  if (value == null || isNaN(value)) return 'N/A';
-                  return `${Number(value).toFixed(1)}°C`;
-                }}
+              <Tooltip content={<CustomTooltip />} />
+              {/* Confidence band - stacked areas to show uncertainty range */}
+              <Area
+                type="monotone"
+                dataKey="confidenceLower"
+                stroke="none"
+                fill="transparent"
+                stackId="confidence"
+                dot={false}
+                connectNulls
+                isAnimationActive={false}
+              />
+              <Area
+                type="monotone"
+                dataKey="confidenceBand"
+                stroke="none"
+                fill="url(#confidenceBandGradient)"
+                stackId="confidence"
+                dot={false}
+                connectNulls
+                isAnimationActive={false}
               />
               {/* Historical actual temperatures */}
               <Area
@@ -247,6 +292,10 @@ function TrendAnalysis({ cityName }) {
             <div className="legend-item">
               <span className="legend-line" style={{ borderColor: '#A78BFA' }}></span>
               <span>Trend Line</span>
+            </div>
+            <div className="legend-item">
+              <span className="legend-band" style={{ backgroundColor: '#A78BFA', opacity: 0.2 }}></span>
+              <span>95% Confidence Band</span>
             </div>
             <div className="legend-item">
               <span className="legend-dot" style={{ backgroundColor: '#f97316' }}></span>

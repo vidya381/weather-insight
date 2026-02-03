@@ -144,37 +144,66 @@ def analyze_trends(
         except statistics.StatisticsError:
             std_dev = 0
 
+        # Calculate standard error for confidence bands
+        predictions = [slope * x_values[i] + intercept for i in range(len(x_values))]
+        residuals = [y_values[i] - predictions[i] for i in range(len(y_values))]
+        mse = sum(r ** 2 for r in residuals) / max(len(residuals) - 2, 1)
+        standard_error = mse ** 0.5
+
+        # Calculate x statistics for confidence interval width
+        mean_x = statistics.mean(x_values)
+        sum_sq_x = sum((x - mean_x) ** 2 for x in x_values)
+
         # Classify trend
         trend_direction = classify_trend(slope)
 
-        # Generate predictions for next 7 days
+        # Generate predictions for next 7 days with confidence intervals
         last_x = x_values[-1]
         predictions = {}
+        prediction_intervals = {}
         for future_day in range(1, 8):
             pred_x = last_x + future_day
             pred_y = slope * pred_x + intercept
+
+            # Wider confidence for predictions (further from data)
+            if sum_sq_x > 0:
+                interval_width = 1.96 * standard_error * (1 + 1/len(x_values) + (pred_x - mean_x)**2 / sum_sq_x) ** 0.5
+            else:
+                interval_width = 1.96 * standard_error
+
             future_date = weather_records[-1].timestamp + timedelta(days=future_day)
-            predictions[future_date.strftime("%Y-%m-%d")] = round(pred_y, 2)
+            date_str = future_date.strftime("%Y-%m-%d")
+            predictions[date_str] = round(pred_y, 2)
+            prediction_intervals[date_str] = {
+                "upper": round(pred_y + interval_width, 2),
+                "lower": round(pred_y - interval_width, 2)
+            }
 
         # Prepare historical data (sample to max 90 points for performance)
-        logger.info(f"DEBUG: Starting historical data prep. x_values length: {len(x_values)}, valid_records length: {len(valid_records)}")
-
         sample_step = max(1, len(x_values) // 90)
         historical_data = []
 
-        try:
-            for i in range(0, len(x_values), sample_step):
-                # Use valid_records which matches x_values/y_values indices
-                record = valid_records[i]
-                historical_data.append({
-                    "date": record.timestamp.strftime("%Y-%m-%d"),
-                    "temperature": round(y_values[i], 2),
-                    "x": x_values[i],
-                })
-        except Exception as e:
-            logger.error(f"ERROR building historical_data: {e}")
+        for i in range(0, len(x_values), sample_step):
+            # Use valid_records which matches x_values/y_values indices
+            record = valid_records[i]
+            x = x_values[i]
 
-        logger.info(f"✅ Prepared {len(historical_data)} historical data points for {city_name}")
+            # Calculate confidence interval width for this point
+            # Wider at edges, narrower at center
+            if sum_sq_x > 0:
+                interval_width = 1.96 * standard_error * (1 + 1/len(x_values) + (x - mean_x)**2 / sum_sq_x) ** 0.5
+            else:
+                interval_width = 1.96 * standard_error
+
+            trend_value = slope * x + intercept
+
+            historical_data.append({
+                "date": record.timestamp.strftime("%Y-%m-%d"),
+                "temperature": round(y_values[i], 2),
+                "x": x,
+                "trend_upper": round(trend_value + interval_width, 2),
+                "trend_lower": round(trend_value - interval_width, 2),
+            })
 
         # Create result
         result = {
@@ -192,10 +221,12 @@ def analyze_trends(
                 "min": round(min_value, 2),
                 "max": round(max_value, 2),
                 "std_dev": round(std_dev, 2),
-                "range": round(max_value - min_value, 2)
+                "range": round(max_value - min_value, 2),
+                "standard_error": round(standard_error, 2)
             },
             "historical_data": historical_data,
-            "predictions_7_day": predictions
+            "predictions_7_day": predictions,
+            "prediction_intervals": prediction_intervals
         }
 
         # Save to database

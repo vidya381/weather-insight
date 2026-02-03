@@ -46,6 +46,7 @@ class TrendResponse(BaseModel):
     statistics: Dict[str, float]
     historical_data: List[Dict[str, Any]]
     predictions_7_day: Dict[str, float]
+    prediction_intervals: Dict[str, Dict[str, float]]
 
 
 class AnalysisResponse(BaseModel):

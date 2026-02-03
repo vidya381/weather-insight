@@ -427,6 +427,13 @@ body.dark-mode .legend-item {
   flex-shrink: 0;
 }
 
+.legend-band {
+  width: 20px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
 .trend-stats h4 {
   font-size: 0.95rem;
   font-weight: 600;
