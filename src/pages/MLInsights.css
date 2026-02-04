@@ -169,3 +169,57 @@ body.dark-mode .btn-primary:hover {
     font-size: 1.25rem;
   }
 }
+
+/* Small phones (375px and below) */
+@media (max-width: 375px) {
+  .ml-insights-header h2 {
+    font-size: 1.125rem;
+  }
+
+  .ml-select {
+    font-size: 0.8rem;
+    min-width: 150px;
+  }
+
+  .empty-ml-icon {
+    font-size: 56px;
+  }
+}
+
+/* Extra small phones (320px) */
+@media (max-width: 320px) {
+  .ml-insights-container {
+    padding: 1rem 0.625rem;
+  }
+
+  .ml-insights-header h2 {
+    font-size: 1rem;
+  }
+
+  .city-selector label {
+    font-size: 0.75rem;
+  }
+
+  .ml-select {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.625rem;
+    min-width: 130px;
+  }
+
+  .btn-primary {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+  }
+
+  .empty-ml-icon {
+    font-size: 48px;
+  }
+
+  .empty-ml-message h3 {
+    font-size: 1.25rem;
+  }
+
+  .empty-ml-message p {
+    font-size: 0.875rem;
+  }
+}

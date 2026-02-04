@@ -39,11 +39,14 @@ class TrendResponse(BaseModel):
     analysis_period_days: int
     trend_direction: str
     slope: float
+    intercept: float
     slope_interpretation: str
     r_squared: float
     confidence: str
     statistics: Dict[str, float]
+    historical_data: List[Dict[str, Any]]
     predictions_7_day: Dict[str, float]
+    prediction_intervals: Dict[str, Dict[str, float]]
 
 
 class AnalysisResponse(BaseModel):

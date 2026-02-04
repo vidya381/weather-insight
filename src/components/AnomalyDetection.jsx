@@ -8,6 +8,7 @@ function AnomalyDetection({ cityName }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [days, setDays] = useState(30);
+  const [lastUpdated, setLastUpdated] = useState(null);
 
   useEffect(() => {
     if (cityName) {
@@ -21,12 +22,16 @@ function AnomalyDetection({ cityName }) {
     try {
       const data = await mlAPI.getAnomalies(cityName, days);
       setAnomalies(data.anomalies);
+      setLastUpdated(new Date());
     } catch (err) {
       setError(
         'Not enough data yet. Anomaly detection requires at least 10 days of weather history. ' +
         'Weather is collected hourly - check back soon!'
       );
-      console.error('Anomaly load error:', err);
+      // Only log unexpected errors (404 is expected when no data available)
+      if (err.response?.status !== 404) {
+        console.error('Anomaly load error:', err);
+      }
     } finally {
       setLoading(false);
     }
@@ -45,31 +50,21 @@ function AnomalyDetection({ cityName }) {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="ml-section">
-        <Spinner text="Analyzing temperature anomalies..." />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="ml-section">
-        <div className="ml-error">
-          <p>{error}</p>
-          <button onClick={loadAnomalies} className="retry-btn">
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="ml-section">
       <div className="ml-header">
-        <h3>Temperature Anomalies</h3>
+        <div className="ml-header-left">
+          <h3>Temperature Anomalies</h3>
+          {lastUpdated && (
+            <span className="ml-last-updated">
+              Last updated: {lastUpdated.toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+              })}
+            </span>
+          )}
+        </div>
         <select
           value={days}
           onChange={(e) => setDays(Number(e.target.value))}
@@ -80,6 +75,20 @@ function AnomalyDetection({ cityName }) {
           <option value={90}>Last 90 days</option>
         </select>
       </div>
+
+      {loading && <Spinner text="Analyzing temperature anomalies..." />}
+
+      {error && (
+        <div className="ml-error">
+          <p>{error}</p>
+          <button onClick={loadAnomalies} className="retry-btn">
+            Retry
+          </button>
+        </div>
+      )}
+
+      {!loading && !error && (
+        <>
 
       {anomalies.length === 0 ? (
         <div className="ml-empty">
@@ -101,7 +110,14 @@ function AnomalyDetection({ cityName }) {
                   {anomaly.severity}
                 </span>
                 <span className="anomaly-date">
-                  {new Date(anomaly.timestamp).toLocaleDateString()}
+                  {new Date(anomaly.timestamp).toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                  })}
                 </span>
               </div>
               <div className="anomaly-details">
@@ -127,6 +143,8 @@ function AnomalyDetection({ cityName }) {
             </div>
           ))}
         </div>
+      )}
+      </>
       )}
     </div>
   );

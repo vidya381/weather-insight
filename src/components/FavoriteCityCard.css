@@ -48,12 +48,73 @@ body.dark-mode .favorite-city-card.error:hover {
   border-color: rgba(42, 42, 42, 0.8);
 }
 
+.star-btn {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #e5e5e5;
+  background: #ffffff;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  opacity: 0;
+  z-index: 1;
+}
+
+.favorite-city-card:hover .star-btn {
+  opacity: 1;
+}
+
+.star-btn:hover:not(:disabled) {
+  background: #fef3c7;
+  border-color: #fde68a;
+  color: #f59e0b;
+  transform: scale(1.1);
+}
+
+.star-btn.is-primary {
+  background: #fef3c7;
+  border-color: #fde68a;
+  color: #f59e0b;
+  opacity: 1;
+}
+
+.star-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+body.dark-mode .star-btn {
+  background: rgba(42, 47, 60, 0.9);
+  border-color: rgba(66, 71, 86, 0.6);
+  color: #9CA3AF;
+}
+
+body.dark-mode .star-btn:hover:not(:disabled) {
+  background: rgba(60, 47, 28, 0.9);
+  border-color: rgba(92, 71, 42, 0.8);
+  color: #FDB813;
+}
+
+body.dark-mode .star-btn.is-primary {
+  background: rgba(60, 47, 28, 0.9);
+  border-color: rgba(92, 71, 42, 0.8);
+  color: #FDB813;
+}
+
 .remove-btn {
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
-  width: 28px;
-  height: 28px;
+  z-index: 1;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: 1px solid #e5e5e5;
   background: #ffffff;
@@ -66,18 +127,22 @@ body.dark-mode .favorite-city-card.error:hover {
   justify-content: center;
   opacity: 0;
   transition: all 0.15s;
-  z-index: 1;
 }
 
 .favorite-city-card:hover .remove-btn {
   opacity: 1;
 }
 
-.remove-btn:hover {
+.remove-btn:hover:not(:disabled) {
   background: #fee2e2;
   border-color: #fecaca;
   color: #dc2626;
   transform: scale(1.1);
+}
+
+.remove-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 body.dark-mode .remove-btn {
@@ -311,5 +376,91 @@ body.dark-mode .retry-small:hover {
 
   .temp-range {
     font-size: 1rem;
+  }
+
+  /* Always show buttons on mobile - no hover state */
+  .star-btn,
+  .remove-btn {
+    opacity: 1;
+  }
+
+  /* Make buttons slightly smaller on mobile */
+  .star-btn,
+  .remove-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .star-btn {
+    top: 0.5rem;
+    left: 0.5rem;
+  }
+
+  .remove-btn {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+}
+
+/* Small phones (375px and below) */
+@media (max-width: 375px) {
+  .favorite-city-card {
+    width: 160px;
+  }
+
+  .city-card-name {
+    font-size: 0.95rem;
+  }
+
+  .temp-main {
+    font-size: 1.65rem;
+  }
+
+  /* Slightly smaller buttons for small phones */
+  .star-btn,
+  .remove-btn {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+/* Extra small phones (320px) */
+@media (max-width: 320px) {
+  .favorite-city-card {
+    width: 145px;
+    padding: 0.875rem;
+  }
+
+  .city-card-content {
+    gap: 0.5rem;
+    min-height: 100px;
+  }
+
+  .city-card-name {
+    font-size: 0.9rem;
+  }
+
+  .city-card-country {
+    font-size: 0.7rem;
+  }
+
+  .temp-main {
+    font-size: 1.5rem;
+  }
+
+  .temp-range {
+    font-size: 0.9rem;
+  }
+
+  /* Even smaller buttons for extra small phones */
+  .star-btn,
+  .remove-btn {
+    width: 24px;
+    height: 24px;
+  }
+
+  .star-btn svg,
+  .remove-btn {
+    font-size: 1.25rem;
   }
 }

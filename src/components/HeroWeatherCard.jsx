@@ -1,5 +1,5 @@
-import { useState, useEffect, memo } from 'react';
-import { weatherAPI } from '../api/weather';
+import { useState, memo } from 'react';
+import { useCachedWeather, useCachedForecast } from '../hooks/useCachedWeather';
 import Skeleton from './Skeleton';
 import {
   IoSunny, IoPartlySunny, IoCloud, IoRainy, IoSnow,
@@ -24,36 +24,15 @@ const getSmallWeatherIcon = (condition, size = 32) => {
 };
 
 function HeroWeatherCard({ city }) {
-  const [weather, setWeather] = useState(null);
-  const [forecast, setForecast] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // Use cached hooks to prevent duplicate API calls
+  const { weather, loading: weatherLoading, error: weatherError } = useCachedWeather(city?.name);
+  const { forecast: forecastData, loading: forecastLoading, error: forecastError } = useCachedForecast(city?.name);
 
-  useEffect(() => {
-    if (city) {
-      loadWeatherData();
-    }
-  }, [city]);
+  const loading = weatherLoading || forecastLoading;
+  const error = weatherError || forecastError;
 
-  const loadWeatherData = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const [currentData, forecastData] = await Promise.all([
-        weatherAPI.getCurrentWeather(city.name),
-        weatherAPI.getForecast(city.name, 5)
-      ]);
-
-      setWeather(currentData);
-      // Get first 12 forecast items (next 36 hours in 3-hour intervals)
-      setForecast(forecastData.forecast.slice(0, 12));
-    } catch (err) {
-      setError('Failed to load weather data');
-      console.error('Weather load error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Get first 12 forecast items (next 36 hours in 3-hour intervals)
+  const forecast = forecastData?.forecast?.slice(0, 12) || [];
 
   const formatTime = (timestamp) => {
     const date = new Date(timestamp * 1000);
@@ -112,10 +91,7 @@ function HeroWeatherCard({ city }) {
   if (error) {
     return (
       <div className="hero-weather-card error">
-        <div className="error-text">{error}</div>
-        <button onClick={loadWeatherData} className="retry-btn">
-          Retry
-        </button>
+        <div className="error-text">Failed to load weather data. Please try selecting another city.</div>
       </div>
     );
   }

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { citiesAPI } from '../api/cities';
+import { getGuestCities } from '../utils/guestCities';
 import AnomalyDetection from '../components/AnomalyDetection';
 import TrendAnalysis from '../components/TrendAnalysis';
 import PatternClustering from '../components/PatternClustering';
@@ -14,7 +15,7 @@ import './Dashboard.css';
 import './MLInsights.css';
 
 export default function MLInsights() {
-  const { user, logout, updateUser } = useAuth();
+  const { user, isAuthenticated, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
   const [selectedCity, setSelectedCity] = useState(null);
@@ -23,17 +24,30 @@ export default function MLInsights() {
 
   useEffect(() => {
     loadFavorites();
-  }, []);
+  }, [isAuthenticated]);
 
   const loadFavorites = async () => {
     try {
-      const data = await citiesAPI.getFavorites();
+      let data;
+
+      if (isAuthenticated) {
+        // Load from API for authenticated users
+        data = await citiesAPI.getFavorites();
+      } else {
+        // Load from localStorage for guests
+        data = getGuestCities();
+      }
+
       setFavorites(data);
       if (data.length > 0 && !selectedCity) {
         setSelectedCity(data[0]);
       }
     } catch (error) {
       console.error('Failed to load favorites:', error);
+      // For guests, just use empty array on error
+      if (!isAuthenticated) {
+        setFavorites([]);
+      }
     } finally {
       setLoading(false);
     }
@@ -41,7 +55,7 @@ export default function MLInsights() {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/dashboard');
   };
 
   const handleEditProfile = () => {
@@ -74,11 +88,20 @@ export default function MLInsights() {
               <IoHome size={20} />
               <span>Dashboard</span>
             </button>
-            <ProfileDropdown
-              username={user?.username}
-              onLogout={handleLogout}
-              onEditProfile={handleEditProfile}
-            />
+            {isAuthenticated ? (
+              <ProfileDropdown
+                username={user?.username}
+                onLogout={handleLogout}
+                onEditProfile={handleEditProfile}
+              />
+            ) : (
+              <button
+                onClick={() => navigate('/login')}
+                className="header-btn-signin"
+              >
+                Sign In
+              </button>
+            )}
           </div>
         </div>
       </header>

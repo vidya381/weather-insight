@@ -23,22 +23,9 @@ function App() {
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/ml-insights"
-                  element={
-                    <ProtectedRoute>
-                      <MLInsights />
-                    </ProtectedRoute>
-                  }
-                />
+                {/* Dashboard and ML Insights are public - guests can use with localStorage */}
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/ml-insights" element={<MLInsights />} />
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Routes>

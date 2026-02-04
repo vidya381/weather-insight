@@ -6,7 +6,7 @@ Token generation, validation, and decoding
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
 from jose import JWTError, jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
@@ -15,6 +15,8 @@ from app.database import get_db
 
 # Security scheme for JWT bearer token
 security = HTTPBearer()
+# Optional security scheme that doesn't raise exceptions
+optional_security = HTTPBearer(auto_error=False)
 
 
 def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
@@ -114,3 +116,45 @@ async def get_current_user(
         raise credentials_exception
 
     return user
+
+
+async def get_current_user_optional(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(optional_security),
+    db: Session = Depends(get_db)
+) -> Optional[Any]:
+    """
+    Optional dependency to get current authenticated user from JWT token
+
+    Returns None if no valid token is provided instead of raising an exception.
+    Useful for endpoints that work for both authenticated and guest users.
+
+    Args:
+        credentials: Optional HTTP authorization credentials with JWT token
+        db: Database session
+
+    Returns:
+        User model instance if authenticated, None if not authenticated
+    """
+    # If no credentials provided, return None (guest user)
+    if credentials is None:
+        return None
+
+    # Get token from credentials
+    token = credentials.credentials
+
+    # Decode token
+    payload = decode_token(token)
+    if payload is None:
+        return None
+
+    # Extract user ID from token
+    user_id: int = payload.get("user_id")
+    if user_id is None:
+        return None
+
+    # Import here to avoid circular dependency
+    from app.repositories.user_repository import UserRepository
+
+    # Get user from database
+    user = UserRepository.get_by_id(db, user_id)
+    return user  # Returns None if user not found, which is fine for optional auth

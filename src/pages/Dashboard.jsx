@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { citiesAPI } from '../api/cities';
@@ -11,11 +11,12 @@ import WeatherBackground from '../components/WeatherBackground';
 import ProfileDropdown from '../components/ProfileDropdown';
 import ProfileEditModal from '../components/ProfileEditModal';
 import Spinner from '../components/Spinner';
-import { IoCloud, IoAnalytics, IoSparkles, IoTrendingUp, IoLocationSharp, IoSunny } from 'react-icons/io5';
+import { IoCloud, IoAnalytics, IoSparkles, IoTrendingUp, IoLocationSharp, IoSunny, IoInformationCircle } from 'react-icons/io5';
+import { getGuestCities, addGuestCity, removeGuestCity, checkAndClearExpiredGuestData, clearGuestCities } from '../utils/guestCities';
 import './Dashboard.css';
 
 export default function Dashboard() {
-  const { user, logout, updateUser } = useAuth();
+  const { user, isAuthenticated, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
   const [selectedCity, setSelectedCity] = useState(null);
@@ -26,59 +27,116 @@ export default function Dashboard() {
   const searchSectionRef = useRef(null);
 
   useEffect(() => {
-    loadFavorites();
-  }, []);
+    // Check and clear expired guest data on mount
+    checkAndClearExpiredGuestData();
 
-  const loadFavorites = async () => {
+    // Load favorites (guest or authenticated)
+    loadFavorites();
+
+    // Clear guest data when user logs in (existing account)
+    // Migration only happens on signup via Register page
+    if (isAuthenticated) {
+      const guestCities = getGuestCities();
+      if (guestCities.length > 0) {
+        // User logged in with guest cities - clear them
+        clearGuestCities();
+      }
+    }
+  }, [isAuthenticated]);
+
+  const loadFavorites = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await citiesAPI.getFavorites();
+      let data;
+
+      if (isAuthenticated) {
+        // Load from API for authenticated users
+        data = await citiesAPI.getFavorites();
+      } else {
+        // Load from localStorage for guests
+        data = getGuestCities();
+      }
+
       setFavorites(data);
-      // Set first city as selected hero city
+      // Set primary city as selected hero city, or first city if no primary
       if (data.length > 0 && !selectedCity) {
-        setSelectedCity(data[0]);
+        const primaryCity = data.find(city => city.is_primary);
+        setSelectedCity(primaryCity || data[0]);
       } else if (data.length === 0) {
         setSelectedCity(null);
       }
       return data;
     } catch (err) {
       console.error('Failed to load favorites:', err);
-      setError('Failed to load your favorite cities. Please try again.');
+      if (isAuthenticated) {
+        setError('Failed to load your favorite cities. Please try again.');
+      } else {
+        // For guests, just use empty array if there's an error
+        setFavorites([]);
+      }
       return [];
     } finally {
       setLoading(false);
     }
-  };
+  }, [isAuthenticated, selectedCity]);
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/dashboard');
   };
 
-  const handleCitySelect = async (city) => {
+  const handleCitySelect = useCallback(async (city) => {
     try {
-      await citiesAPI.addFavorite(city.id);
+      if (isAuthenticated) {
+        // Save to API for authenticated users
+        await citiesAPI.addFavorite(city.id);
+      } else {
+        // Save to localStorage for guests
+        addGuestCity(city);
+      }
       await loadFavorites();
       setShowSearch(false);
     } catch (error) {
       console.error('Failed to add favorite:', error);
     }
-  };
+  }, [isAuthenticated, loadFavorites]);
 
-  const handleRemoveFavorite = async () => {
-    const updatedFavorites = await loadFavorites();
-    // If the removed city was the selected one, select the first available
-    if (updatedFavorites.length > 0) {
-      setSelectedCity(updatedFavorites[0]);
-    } else {
-      setSelectedCity(null);
+  const handleRemoveFavorite = useCallback(async (removedCity) => {
+    // Check if removed city was primary
+    const wasPrimary = removedCity.is_primary;
+
+    // Optimistic update - remove immediately from UI
+    let updatedFavorites = favorites.filter(city => city.id !== removedCity.id);
+
+    // If removed city was primary and there are remaining cities, set the first one as primary
+    if (wasPrimary && updatedFavorites.length > 0) {
+      updatedFavorites = updatedFavorites.map((city, index) => ({
+        ...city,
+        is_primary: index === 0
+      }));
     }
-  };
 
-  const handleCityCardSelect = (city) => {
+    setFavorites(updatedFavorites);
+
+    // If the removed city was the selected one, select the first available
+    if (selectedCity?.id === removedCity.id) {
+      if (updatedFavorites.length > 0) {
+        setSelectedCity(updatedFavorites[0]);
+      } else {
+        setSelectedCity(null);
+      }
+    }
+  }, [favorites, selectedCity]);
+
+  const handleCityCardSelect = useCallback((city) => {
     setSelectedCity(city);
-  };
+  }, []);
+
+  const handlePrimaryChange = useCallback(async (cityId) => {
+    // Reload favorites to get updated order and is_primary flags
+    await loadFavorites();
+  }, [loadFavorites]);
 
   const handleAddCityClick = () => {
     setShowSearch(true);
@@ -118,14 +176,36 @@ export default function Dashboard() {
               <IoAnalytics size={20} />
               <span>ML Insights</span>
             </button>
-            <ProfileDropdown
-              username={user?.username}
-              onLogout={handleLogout}
-              onEditProfile={handleEditProfile}
-            />
+            {isAuthenticated ? (
+              <ProfileDropdown
+                username={user?.username}
+                onLogout={handleLogout}
+                onEditProfile={handleEditProfile}
+              />
+            ) : (
+              <button
+                onClick={() => navigate('/login')}
+                className="header-btn-signin"
+              >
+                Sign In
+              </button>
+            )}
           </div>
         </div>
       </header>
+
+      {/* Guest Mode Badge */}
+      {!isAuthenticated && (
+        <div className="guest-badge-container">
+          <div className="guest-badge">
+            Guest Mode •{' '}
+            <button onClick={() => navigate('/register')} className="guest-badge-link">
+              Sign up
+            </button>{' '}
+            to sync
+          </div>
+        </div>
+      )}
 
       <main className="dashboard-main">
         <div className="dashboard-content">
@@ -216,15 +296,17 @@ export default function Dashboard() {
             <div className="favorites-section">
               <h2>Favorite Cities</h2>
               <div className="favorites-scroll">
+                <AddCityCard onClick={handleAddCityClick} />
                 {favorites.map((city) => (
                   <FavoriteCityCard
                     key={city.id}
                     city={city}
                     onRemove={handleRemoveFavorite}
                     onSelect={handleCityCardSelect}
+                    onPrimaryChange={handlePrimaryChange}
+                    isAuthenticated={isAuthenticated}
                   />
                 ))}
-                <AddCityCard onClick={handleAddCityClick} />
               </div>
             </div>
           )}

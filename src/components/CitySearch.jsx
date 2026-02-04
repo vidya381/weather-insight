@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useDebounce } from '../hooks/useDebounce';
 import { citiesAPI } from '../api/cities';
 import './CitySearch.css';
@@ -10,6 +10,12 @@ export default function CitySearch({ onCitySelect }) {
   const [error, setError] = useState(null);
   const [showResults, setShowResults] = useState(false);
   const debouncedQuery = useDebounce(query, 400);
+  const inputRef = useRef(null);
+
+  // Auto-focus input when component mounts
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     if (debouncedQuery.length < 2) {
@@ -47,6 +53,7 @@ export default function CitySearch({ onCitySelect }) {
   return (
     <div className="city-search">
       <input
+        ref={inputRef}
         type="text"
         placeholder="Search for a city..."
         value={query}

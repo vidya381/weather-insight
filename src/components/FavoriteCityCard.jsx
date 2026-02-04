@@ -1,9 +1,10 @@
-import { useState, useEffect, memo } from 'react';
-import { weatherAPI } from '../api/weather';
+import { useState, memo } from 'react';
+import { useCachedWeather } from '../hooks/useCachedWeather';
 import { citiesAPI } from '../api/cities';
+import { removeGuestCity, setPrimaryGuestCity } from '../utils/guestCities';
 import {
   IoSunny, IoPartlySunny, IoCloud, IoRainy, IoSnow,
-  IoThunderstorm, IoCloudyNight
+  IoThunderstorm, IoCloudyNight, IoStar, IoStarOutline
 } from 'react-icons/io5';
 import './FavoriteCityCard.css';
 
@@ -19,36 +20,60 @@ const getWeatherIcon = (condition, size = 48) => {
   return <IoPartlySunny size={size} className="weather-icon weather-icon-cloudy" />;
 };
 
-function FavoriteCityCard({ city, onRemove, onSelect }) {
-  const [weather, setWeather] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+function FavoriteCityCard({ city, onRemove, onSelect, onPrimaryChange, isAuthenticated = true }) {
+  // Use cached weather to prevent duplicate API calls
+  const { weather, loading, error: weatherError } = useCachedWeather(city?.name);
+  const error = weatherError ? 'Failed to load' : null;
 
-  useEffect(() => {
-    loadWeather();
-  }, [city]);
-
-  const loadWeather = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await weatherAPI.getCurrentWeather(city.name);
-      setWeather(data);
-    } catch (err) {
-      setError('Failed to load');
-      console.error('Weather load error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [settingPrimary, setSettingPrimary] = useState(false);
+  const [removing, setRemoving] = useState(false);
 
   const handleRemove = async (e) => {
     e.stopPropagation();
+
+    if (removing) return;
+
+    setRemoving(true);
+
     try {
-      await citiesAPI.removeFavorite(city.id);
-      if (onRemove) onRemove();
+      if (isAuthenticated) {
+        // Remove from API for authenticated users
+        await citiesAPI.removeFavorite(city.id);
+      } else {
+        // Remove from localStorage for guests
+        removeGuestCity(city.id);
+      }
+
+      // Only update UI after successful removal
+      if (onRemove) onRemove(city);
     } catch (err) {
       console.error('Failed to remove favorite:', err);
+      alert('Failed to remove city. Please try again.');
+      setRemoving(false);
+    }
+  };
+
+  const handleSetPrimary = async (e) => {
+    e.stopPropagation();
+
+    if (city.is_primary || settingPrimary) return;
+
+    setSettingPrimary(true);
+
+    try {
+      if (isAuthenticated) {
+        await citiesAPI.setPrimaryCity(city.id);
+      } else {
+        setPrimaryGuestCity(city.id);
+      }
+
+      if (onPrimaryChange) {
+        onPrimaryChange(city.id);
+      }
+    } catch (err) {
+      console.error('Failed to set primary city:', err);
+    } finally {
+      setSettingPrimary(false);
     }
   };
 
@@ -73,7 +98,6 @@ function FavoriteCityCard({ city, onRemove, onSelect }) {
       <div className="favorite-city-card error">
         <div className="city-card-content">
           <p className="error-text">{error}</p>
-          <button onClick={loadWeather} className="retry-small">↻</button>
         </div>
       </div>
     );
@@ -83,8 +107,22 @@ function FavoriteCityCard({ city, onRemove, onSelect }) {
 
   return (
     <div className="favorite-city-card" onClick={handleClick}>
-      <button className="remove-btn" onClick={handleRemove} title="Remove from favorites">
-        ×
+      <button
+        className={`star-btn ${city.is_primary ? 'is-primary' : ''}`}
+        onClick={handleSetPrimary}
+        title={city.is_primary ? 'Primary city' : 'Set as primary city'}
+        disabled={settingPrimary}
+      >
+        {city.is_primary ? <IoStar size={18} /> : <IoStarOutline size={18} />}
+      </button>
+
+      <button
+        className="remove-btn"
+        onClick={handleRemove}
+        title="Remove from favorites"
+        disabled={removing}
+      >
+        {removing ? '...' : '×'}
       </button>
 
       <div className="city-card-content">

@@ -1,5 +1,5 @@
-import { useState, useEffect, memo } from 'react';
-import { weatherAPI } from '../api/weather';
+import { memo } from 'react';
+import { useCachedForecast } from '../hooks/useCachedWeather';
 import Skeleton from './Skeleton';
 import {
   IoSunny, IoPartlySunny, IoCloud, IoRainy, IoSnow,
@@ -20,33 +20,12 @@ const getWeatherIcon = (condition, size = 48) => {
 };
 
 function DailyForecast({ city }) {
-  const [forecast, setForecast] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // Use cached forecast to prevent duplicate API calls
+  const { forecast: forecastData, loading, error: forecastError } = useCachedForecast(city?.name);
 
-  useEffect(() => {
-    if (city) {
-      loadForecast();
-    }
-  }, [city]);
+  const error = forecastError ? 'Failed to load forecast' : null;
 
-  const loadForecast = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await weatherAPI.getForecast(city.name, 5);
-
-      // Group by day and get daily highs/lows
-      const dailyData = processForecastData(data.forecast);
-      setForecast(dailyData);
-    } catch (err) {
-      setError('Failed to load forecast');
-      console.error('Forecast load error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Define processForecastData before using it
   const processForecastData = (forecastList) => {
     const dailyMap = {};
 
@@ -80,6 +59,9 @@ function DailyForecast({ city }) {
       ).pop()
     }));
   };
+
+  // Group by day and get daily highs/lows
+  const forecast = forecastData?.forecast ? processForecastData(forecastData.forecast) : [];
 
   const formatDate = (date) => {
     const today = new Date();
@@ -124,9 +106,6 @@ function DailyForecast({ city }) {
         <h2>Daily Forecast</h2>
         <div className="error-message">
           <p>{error}</p>
-          <button onClick={loadForecast} className="retry-btn">
-            Retry
-          </button>
         </div>
       </div>
     );

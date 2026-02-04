@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { citiesAPI } from '../api/cities';
+import { getGuestCities, clearGuestCities } from '../utils/guestCities';
+import { IoCloud, IoSparkles } from 'react-icons/io5';
 import './Auth.css';
 
 export default function Register() {
@@ -23,8 +26,13 @@ export default function Register() {
       return;
     }
 
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
+    if (username.length < 3) {
+      setError('Username must be at least 3 characters');
+      return;
+    }
+
+    if (username.length > 50) {
+      setError('Username must be 50 characters or less');
       return;
     }
 
@@ -33,22 +41,79 @@ export default function Register() {
       return;
     }
 
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
     setLoading(true);
     const result = await register(username, email, password);
-    setLoading(false);
 
     if (result.success) {
+      // Migrate guest cities for new accounts
+      const guestCities = result.guestCities || [];
+      if (guestCities.length > 0) {
+        let migratedCount = 0;
+        let failedCities = [];
+
+        try {
+          // Process all cities in parallel
+          const migrationPromises = guestCities.map(async (city) => {
+            try {
+              const searchResults = await citiesAPI.searchCities(city.name, 5);
+              const matchedCity = searchResults.find(
+                c => c.name === city.name && c.country === city.country
+              );
+              if (matchedCity) {
+                await citiesAPI.addFavorite(matchedCity.id);
+                migratedCount++;
+              } else {
+                failedCities.push(city.name);
+              }
+            } catch (err) {
+              console.error('Failed to migrate city:', city.name, err);
+              failedCities.push(city.name);
+            }
+          });
+
+          await Promise.all(migrationPromises);
+          clearGuestCities();
+
+          // Notify user about migration results
+          if (failedCities.length > 0) {
+            const failedList = failedCities.join(', ');
+            alert(`Welcome! ${migratedCount} of ${guestCities.length} cities migrated successfully.\n\nFailed to migrate: ${failedList}\n\nYou can add them again from the dashboard.`);
+          }
+        } catch (err) {
+          console.error('Migration error:', err);
+          alert('Account created successfully, but there was an error migrating your cities. You can add them again from the dashboard.');
+        }
+      }
+
+      setLoading(false);
       navigate('/dashboard');
     } else {
+      setLoading(false);
       setError(result.error);
     }
   };
 
   return (
     <div className="auth-container">
+      <header className="auth-header">
+        <div className="auth-header-content">
+          <div className="logo-section" onClick={() => navigate('/dashboard')}>
+            <div className="logo-icon-wrapper">
+              <IoCloud className="logo-icon logo-cloud" size={28} />
+              <IoSparkles className="logo-icon logo-sparkle" size={14} />
+            </div>
+            <h1 className="logo-text">WeatherInsight</h1>
+          </div>
+        </div>
+      </header>
+
       <div className="auth-box">
-        <h1>WeatherInsight</h1>
-        <h2>Create your account</h2>
+        <h2>Create Account</h2>
 
         {error && <div className="error-message">{error}</div>}
 

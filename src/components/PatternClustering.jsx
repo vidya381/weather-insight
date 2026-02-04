@@ -8,6 +8,7 @@ function PatternClustering({ cityName }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [days, setDays] = useState(90);
+  const [totalDays, setTotalDays] = useState(0);
 
   useEffect(() => {
     if (cityName) {
@@ -21,12 +22,18 @@ function PatternClustering({ cityName }) {
     try {
       const data = await mlAPI.getPatterns(cityName, days);
       setPatterns(data.patterns);
+      // Calculate total days across all patterns
+      const total = data.patterns.reduce((sum, p) => sum + p.count, 0);
+      setTotalDays(total);
     } catch (err) {
       setError(
         'Not enough data yet. Pattern clustering requires at least 30 days of weather history. ' +
         'Weather is collected hourly - check back in a few days!'
       );
-      console.error('Pattern load error:', err);
+      // Only log unexpected errors (404 is expected when no data available)
+      if (err.response?.status !== 404) {
+        console.error('Pattern load error:', err);
+      }
     } finally {
       setLoading(false);
     }
@@ -36,27 +43,6 @@ function PatternClustering({ cityName }) {
     const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
     return colors[clusterId % colors.length];
   };
-
-  if (loading) {
-    return (
-      <div className="ml-section">
-        <Spinner text="Clustering weather patterns..." />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="ml-section">
-        <div className="ml-error">
-          <p>{error}</p>
-          <button onClick={loadPatterns} className="retry-btn">
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="ml-section">
@@ -72,6 +58,20 @@ function PatternClustering({ cityName }) {
           <option value={180}>Last 180 days</option>
         </select>
       </div>
+
+      {loading && <Spinner text="Clustering weather patterns..." />}
+
+      {error && (
+        <div className="ml-error">
+          <p>{error}</p>
+          <button onClick={loadPatterns} className="retry-btn">
+            Retry
+          </button>
+        </div>
+      )}
+
+      {!loading && !error && (
+        <>
 
       {patterns.length === 0 ? (
         <div className="ml-empty">
@@ -93,7 +93,7 @@ function PatternClustering({ cityName }) {
                   Cluster {pattern.cluster_id}
                 </span>
                 <span className="pattern-count">
-                  {pattern.count} days
+                  {pattern.count} days ({Math.round((pattern.count / totalDays) * 100)}%)
                 </span>
               </div>
 
@@ -117,29 +117,45 @@ function PatternClustering({ cityName }) {
                       {pattern.characteristics.avg_pressure?.toFixed(0)} hPa
                     </span>
                   </div>
-                </div>
-              )}
-
-              {pattern.similar_dates && pattern.similar_dates.length > 0 && (
-                <div className="similar-dates">
-                  <span className="similar-label">Similar days:</span>
-                  <div className="similar-list">
-                    {pattern.similar_dates.slice(0, 5).map((date, idx) => (
-                      <span key={idx} className="similar-date">
-                        {new Date(date).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                        })}
-                      </span>
-                    ))}
-                    {pattern.similar_dates.length > 5 && (
-                      <span className="similar-more">
-                        +{pattern.similar_dates.length - 5} more
-                      </span>
-                    )}
+                  <div className="char-item">
+                    <span className="char-label">Avg Wind</span>
+                    <span className="char-value">
+                      {pattern.characteristics.avg_wind_speed?.toFixed(1)} m/s
+                    </span>
                   </div>
                 </div>
               )}
+
+              {pattern.similar_dates && pattern.similar_dates.length > 0 && (() => {
+                // Deduplicate dates by date-only (ignore time)
+                const uniqueDates = [...new Set(
+                  pattern.similar_dates.map(date =>
+                    new Date(date).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })
+                  )
+                )];
+
+                return (
+                  <div className="similar-dates">
+                    <span className="similar-label">Similar days:</span>
+                    <div className="similar-list">
+                      {uniqueDates.slice(0, 5).map((dateStr, idx) => (
+                        <span key={idx} className="similar-date">
+                          {dateStr}
+                        </span>
+                      ))}
+                      {uniqueDates.length > 5 && (
+                        <span className="similar-more">
+                          +{uniqueDates.length - 5} more
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           ))}
         </div>
@@ -151,6 +167,8 @@ function PatternClustering({ cityName }) {
           and pressure patterns. This helps identify recurring weather conditions.
         </p>
       </div>
+      </>
+      )}
     </div>
   );
 }

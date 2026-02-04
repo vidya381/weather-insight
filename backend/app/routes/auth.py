@@ -105,7 +105,7 @@ async def register(user_data: UserRegister, db: Session = Depends(get_db)):
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username already registered"
+            detail="Username already taken"
         )
 
     # Check if email already exists
@@ -127,7 +127,7 @@ async def register(user_data: UserRegister, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to create user"
+            detail="Failed to create account"
         )
 
     return UserResponse(
@@ -157,7 +157,7 @@ async def login(credentials: UserLogin, db: Session = Depends(get_db)):
     if not user or not verify_password(credentials.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username/email or password",
+            detail="Invalid username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -240,7 +240,7 @@ async def update_profile(
         if not update_data.current_password:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Current password required to change password"
+                detail="Current password required"
             )
 
         # Verify current password
@@ -254,7 +254,7 @@ async def update_profile(
         if verify_password(update_data.new_password, current_user.password_hash):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="New password must be different from current password"
+                detail="New password must be different"
             )
 
         # Update password
