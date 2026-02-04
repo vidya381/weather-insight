@@ -296,6 +296,7 @@ export default function Dashboard() {
             <div className="favorites-section">
               <h2>Favorite Cities</h2>
               <div className="favorites-scroll">
+                <AddCityCard onClick={handleAddCityClick} />
                 {favorites.map((city) => (
                   <FavoriteCityCard
                     key={city.id}
@@ -306,7 +307,6 @@ export default function Dashboard() {
                     isAuthenticated={isAuthenticated}
                   />
                 ))}
-                <AddCityCard onClick={handleAddCityClick} />
               </div>
             </div>
           )}

@@ -28,7 +28,10 @@ function AnomalyDetection({ cityName }) {
         'Not enough data yet. Anomaly detection requires at least 10 days of weather history. ' +
         'Weather is collected hourly - check back soon!'
       );
-      console.error('Anomaly load error:', err);
+      // Only log unexpected errors (404 is expected when no data available)
+      if (err.response?.status !== 404) {
+        console.error('Anomaly load error:', err);
+      }
     } finally {
       setLoading(false);
     }

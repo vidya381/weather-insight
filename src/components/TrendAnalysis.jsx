@@ -49,7 +49,10 @@ function TrendAnalysis({ cityName }) {
         'Not enough data yet. Trend analysis requires at least 30 days of weather history. ' +
         'Weather is collected hourly - check back in a few days!'
       );
-      console.error('Trend load error:', err);
+      // Only log unexpected errors (404 is expected when no data available)
+      if (err.response?.status !== 404) {
+        console.error('Trend load error:', err);
+      }
     } finally {
       setLoading(false);
     }
