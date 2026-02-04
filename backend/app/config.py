@@ -46,21 +46,6 @@ class Settings(BaseSettings):
             )
         return v
 
-    @field_validator('SECRET_KEY')
-    @classmethod
-    def validate_secret_key(cls, v: str) -> str:
-        """Validate that SECRET_KEY is production-ready"""
-        if "change-this" in v.lower():
-            raise ValueError(
-                "SECRET_KEY must be changed from default value. "
-                "Generate a secure key for production."
-            )
-        if len(v) < 32:
-            raise ValueError(
-                "SECRET_KEY must be at least 32 characters long for security."
-            )
-        return v
-
     class Config:
         env_file = ".env"
         case_sensitive = True

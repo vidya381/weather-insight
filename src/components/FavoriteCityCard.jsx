@@ -1,5 +1,5 @@
-import { useState, useEffect, memo } from 'react';
-import { weatherAPI } from '../api/weather';
+import { useState, memo } from 'react';
+import { useCachedWeather } from '../hooks/useCachedWeather';
 import { citiesAPI } from '../api/cities';
 import { removeGuestCity, setPrimaryGuestCity } from '../utils/guestCities';
 import {
@@ -21,29 +21,12 @@ const getWeatherIcon = (condition, size = 48) => {
 };
 
 function FavoriteCityCard({ city, onRemove, onSelect, onPrimaryChange, isAuthenticated = true }) {
-  const [weather, setWeather] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // Use cached weather to prevent duplicate API calls
+  const { weather, loading, error: weatherError } = useCachedWeather(city?.name);
+  const error = weatherError ? 'Failed to load' : null;
+
   const [settingPrimary, setSettingPrimary] = useState(false);
   const [removing, setRemoving] = useState(false);
-
-  useEffect(() => {
-    loadWeather();
-  }, [city]);
-
-  const loadWeather = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await weatherAPI.getCurrentWeather(city.name);
-      setWeather(data);
-    } catch (err) {
-      setError('Failed to load');
-      console.error('Weather load error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleRemove = async (e) => {
     e.stopPropagation();
@@ -115,7 +98,6 @@ function FavoriteCityCard({ city, onRemove, onSelect, onPrimaryChange, isAuthent
       <div className="favorite-city-card error">
         <div className="city-card-content">
           <p className="error-text">{error}</p>
-          <button onClick={loadWeather} className="retry-small">↻</button>
         </div>
       </div>
     );

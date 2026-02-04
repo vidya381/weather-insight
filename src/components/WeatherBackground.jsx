@@ -1,27 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { weatherAPI } from '../api/weather';
+import React, { useState, useEffect } from 'react';
+import { useCachedWeather } from '../hooks/useCachedWeather';
 import './WeatherBackground.css';
 
 const WeatherBackground = ({ city }) => {
-  const [weather, setWeather] = useState(null);
+  // Use cached weather to prevent duplicate API calls
+  const { weather } = useCachedWeather(city?.name);
   const [particles, setParticles] = useState([]);
-
-  // Fetch weather data when city changes
-  useEffect(() => {
-    if (city?.name) {
-      loadWeather();
-    }
-  }, [city]);
-
-  const loadWeather = async () => {
-    try {
-      const data = await weatherAPI.getCurrentWeather(city.name);
-      setWeather(data);
-    } catch (err) {
-      console.error('Failed to load weather for background:', err);
-      setWeather(null);
-    }
-  };
 
   // Get background gradient based on weather and time
   const getBackgroundGradient = () => {
