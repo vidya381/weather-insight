@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { citiesAPI } from '../api/cities';
@@ -44,7 +44,7 @@ export default function Dashboard() {
     }
   }, [isAuthenticated]);
 
-  const loadFavorites = async () => {
+  const loadFavorites = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -79,14 +79,14 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [isAuthenticated, selectedCity]);
 
   const handleLogout = () => {
     logout();
     navigate('/dashboard');
   };
 
-  const handleCitySelect = async (city) => {
+  const handleCitySelect = useCallback(async (city) => {
     try {
       if (isAuthenticated) {
         // Save to API for authenticated users
@@ -100,9 +100,9 @@ export default function Dashboard() {
     } catch (error) {
       console.error('Failed to add favorite:', error);
     }
-  };
+  }, [isAuthenticated, loadFavorites]);
 
-  const handleRemoveFavorite = async (removedCity) => {
+  const handleRemoveFavorite = useCallback(async (removedCity) => {
     // Check if removed city was primary
     const wasPrimary = removedCity.is_primary;
 
@@ -127,16 +127,16 @@ export default function Dashboard() {
         setSelectedCity(null);
       }
     }
-  };
+  }, [favorites, selectedCity]);
 
-  const handleCityCardSelect = (city) => {
+  const handleCityCardSelect = useCallback((city) => {
     setSelectedCity(city);
-  };
+  }, []);
 
-  const handlePrimaryChange = async (cityId) => {
+  const handlePrimaryChange = useCallback(async (cityId) => {
     // Reload favorites to get updated order and is_primary flags
     await loadFavorites();
-  };
+  }, [loadFavorites]);
 
   const handleAddCityClick = () => {
     setShowSearch(true);
