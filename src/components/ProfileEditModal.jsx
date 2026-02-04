@@ -17,6 +17,38 @@ export default function ProfileEditModal({ user, onClose, onSuccess }) {
   const [success, setSuccess] = useState('');
   const [showPasswordFields, setShowPasswordFields] = useState(false);
 
+  // Parse API errors into user-friendly messages
+  const parseErrorMessage = (err) => {
+    const apiError = err.response?.data?.detail || '';
+    const statusCode = err.response?.status;
+
+    // Handle specific error cases
+    if (apiError.toLowerCase().includes('username') && apiError.toLowerCase().includes('taken')) {
+      return 'This username is already taken. Please choose another.';
+    }
+    if (apiError.toLowerCase().includes('email') && apiError.toLowerCase().includes('registered')) {
+      return 'This email is already registered. Please use another.';
+    }
+    if (apiError.toLowerCase().includes('password') && apiError.toLowerCase().includes('incorrect')) {
+      return 'Current password is incorrect. Please try again.';
+    }
+    if (apiError.toLowerCase().includes('invalid') && apiError.toLowerCase().includes('password')) {
+      return 'Current password is incorrect. Please try again.';
+    }
+    if (statusCode === 401) {
+      return 'Authentication failed. Please log in again.';
+    }
+    if (statusCode === 403) {
+      return 'You do not have permission to perform this action.';
+    }
+    if (statusCode === 500) {
+      return 'Server error. Please try again later.';
+    }
+
+    // Return generic error for unknown cases
+    return apiError || 'Failed to update profile. Please try again.';
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -83,7 +115,8 @@ export default function ProfileEditModal({ user, onClose, onSuccess }) {
         onClose();
       }, 1500);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to update profile');
+      const friendlyError = parseErrorMessage(err);
+      setError(friendlyError);
     } finally {
       setLoading(false);
     }
@@ -128,6 +161,7 @@ export default function ProfileEditModal({ user, onClose, onSuccess }) {
               minLength={3}
               maxLength={50}
               required
+              disabled={loading}
             />
           </div>
 
@@ -144,6 +178,7 @@ export default function ProfileEditModal({ user, onClose, onSuccess }) {
               value={formData.email}
               onChange={handleChange}
               required
+              disabled={loading}
             />
           </div>
 
@@ -169,6 +204,7 @@ export default function ProfileEditModal({ user, onClose, onSuccess }) {
                     value={formData.currentPassword}
                     onChange={handleChange}
                     placeholder="Enter current password"
+                    disabled={loading}
                   />
                 </div>
 
@@ -182,6 +218,7 @@ export default function ProfileEditModal({ user, onClose, onSuccess }) {
                     onChange={handleChange}
                     minLength={8}
                     placeholder="Enter new password (min 8 characters)"
+                    disabled={loading}
                   />
                 </div>
 
@@ -194,6 +231,7 @@ export default function ProfileEditModal({ user, onClose, onSuccess }) {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     placeholder="Confirm new password"
+                    disabled={loading}
                   />
                 </div>
               </>

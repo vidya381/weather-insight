@@ -4,6 +4,7 @@ Loads settings from environment variables
 """
 
 from pydantic_settings import BaseSettings
+from pydantic import field_validator
 from typing import List
 
 
@@ -23,7 +24,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 hours
 
     # OpenWeather API
-    OPENWEATHER_API_KEY: str = ""
+    OPENWEATHER_API_KEY: str  # Required - no default
     OPENWEATHER_BASE_URL: str = "https://api.openweathermap.org/data/2.5"
 
     # CORS - use comma-separated string in .env
@@ -33,6 +34,32 @@ class Settings(BaseSettings):
     def cors_origins_list(self) -> List[str]:
         """Convert comma-separated string to list"""
         return [origin.strip() for origin in self.CORS_ORIGINS.split(",")]
+
+    @field_validator('OPENWEATHER_API_KEY')
+    @classmethod
+    def validate_api_key(cls, v: str) -> str:
+        """Validate that OpenWeather API key is set"""
+        if not v or v.strip() == "":
+            raise ValueError(
+                "OPENWEATHER_API_KEY must be set in environment variables. "
+                "Get your API key from https://openweathermap.org/api"
+            )
+        return v
+
+    @field_validator('SECRET_KEY')
+    @classmethod
+    def validate_secret_key(cls, v: str) -> str:
+        """Validate that SECRET_KEY is production-ready"""
+        if "change-this" in v.lower():
+            raise ValueError(
+                "SECRET_KEY must be changed from default value. "
+                "Generate a secure key for production."
+            )
+        if len(v) < 32:
+            raise ValueError(
+                "SECRET_KEY must be at least 32 characters long for security."
+            )
+        return v
 
     class Config:
         env_file = ".env"
