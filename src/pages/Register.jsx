@@ -53,6 +53,9 @@ export default function Register() {
       // Migrate guest cities for new accounts
       const guestCities = result.guestCities || [];
       if (guestCities.length > 0) {
+        let migratedCount = 0;
+        let failedCities = [];
+
         try {
           // Process all cities in parallel
           const migrationPromises = guestCities.map(async (city) => {
@@ -63,16 +66,27 @@ export default function Register() {
               );
               if (matchedCity) {
                 await citiesAPI.addFavorite(matchedCity.id);
+                migratedCount++;
+              } else {
+                failedCities.push(city.name);
               }
             } catch (err) {
               console.error('Failed to migrate city:', city.name, err);
+              failedCities.push(city.name);
             }
           });
 
           await Promise.all(migrationPromises);
           clearGuestCities();
+
+          // Notify user about migration results
+          if (failedCities.length > 0) {
+            const failedList = failedCities.join(', ');
+            alert(`Welcome! ${migratedCount} of ${guestCities.length} cities migrated successfully.\n\nFailed to migrate: ${failedList}\n\nYou can add them again from the dashboard.`);
+          }
         } catch (err) {
           console.error('Migration error:', err);
+          alert('Account created successfully, but there was an error migrating your cities. You can add them again from the dashboard.');
         }
       }
 
