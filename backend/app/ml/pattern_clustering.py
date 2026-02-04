@@ -184,7 +184,7 @@ def merge_similar_clusters(
                     unique_dates.append(date_str)
                     if len(unique_dates) >= 10:
                         break
-            except:
+            except (ValueError, TypeError, AttributeError):
                 # If parsing fails, keep the original
                 unique_dates.append(date_str)
 
