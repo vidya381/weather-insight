@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { useCachedWeather } from '../hooks/useCachedWeather';
 import './WeatherBackground.css';
 
@@ -114,4 +114,4 @@ const WeatherBackground = ({ city }) => {
   );
 };
 
-export default WeatherBackground;
+export default memo(WeatherBackground);
