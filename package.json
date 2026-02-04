@@ -1,7 +1,8 @@
 {
-  "name": "temperature-converter",
+  "name": "weather-insight",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "AI-powered weather dashboard with ML-based trend analysis, anomaly detection, and pattern clustering",
   "type": "module",
   "scripts": {
     "dev": "vite",
