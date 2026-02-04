@@ -133,11 +133,16 @@ body.dark-mode .star-btn.is-primary {
   opacity: 1;
 }
 
-.remove-btn:hover {
+.remove-btn:hover:not(:disabled) {
   background: #fee2e2;
   border-color: #fecaca;
   color: #dc2626;
   transform: scale(1.1);
+}
+
+.remove-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 body.dark-mode .remove-btn {

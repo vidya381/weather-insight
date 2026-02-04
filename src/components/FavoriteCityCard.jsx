@@ -25,6 +25,7 @@ function FavoriteCityCard({ city, onRemove, onSelect, onPrimaryChange, isAuthent
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [settingPrimary, setSettingPrimary] = useState(false);
+  const [removing, setRemoving] = useState(false);
 
   useEffect(() => {
     loadWeather();
@@ -47,8 +48,9 @@ function FavoriteCityCard({ city, onRemove, onSelect, onPrimaryChange, isAuthent
   const handleRemove = async (e) => {
     e.stopPropagation();
 
-    // Optimistically update UI immediately
-    if (onRemove) onRemove(city);
+    if (removing) return;
+
+    setRemoving(true);
 
     try {
       if (isAuthenticated) {
@@ -58,9 +60,13 @@ function FavoriteCityCard({ city, onRemove, onSelect, onPrimaryChange, isAuthent
         // Remove from localStorage for guests
         removeGuestCity(city.id);
       }
+
+      // Only update UI after successful removal
+      if (onRemove) onRemove(city);
     } catch (err) {
       console.error('Failed to remove favorite:', err);
-      // Could add error handling here to revert if needed
+      alert('Failed to remove city. Please try again.');
+      setRemoving(false);
     }
   };
 
@@ -128,8 +134,13 @@ function FavoriteCityCard({ city, onRemove, onSelect, onPrimaryChange, isAuthent
         {city.is_primary ? <IoStar size={18} /> : <IoStarOutline size={18} />}
       </button>
 
-      <button className="remove-btn" onClick={handleRemove} title="Remove from favorites">
-        ×
+      <button
+        className="remove-btn"
+        onClick={handleRemove}
+        title="Remove from favorites"
+        disabled={removing}
+      >
+        {removing ? '...' : '×'}
       </button>
 
       <div className="city-card-content">
