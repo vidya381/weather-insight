@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from 'react';
+import { useState, useEffect, memo, useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { mlAPI } from '../api/ml';
 import Spinner from './Spinner';
@@ -166,7 +166,8 @@ function TrendAnalysis({ cityName }) {
     return data;
   };
 
-  const chartData = prepareChartData();
+  // Memoize chart data to prevent unnecessary recalculations
+  const chartData = useMemo(() => prepareChartData(), [trends]);
 
   return (
     <div className="ml-section">
