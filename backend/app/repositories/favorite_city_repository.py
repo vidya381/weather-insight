@@ -62,23 +62,25 @@ class FavoriteCityRepository:
         return False
 
     @staticmethod
-    def get_user_favorites(db: Session, user_id: int) -> List[City]:
+    def get_user_favorites(db: Session, user_id: int) -> List[tuple]:
         """
         Get all favorite cities for a user
+        Primary city appears first, then ordered by added_at
 
         Args:
             db: Database session
             user_id: User ID
 
         Returns:
-            List of City objects
+            List of tuples (City, is_primary)
         """
-        favorites = db.query(City).join(
+        favorites = db.query(City, FavoriteCity.is_primary).join(
             FavoriteCity,
             City.id == FavoriteCity.city_id
         ).filter(
             FavoriteCity.user_id == user_id
         ).order_by(
+            FavoriteCity.is_primary.desc(),
             FavoriteCity.added_at.desc()
         ).all()
 
@@ -143,3 +145,58 @@ class FavoriteCityRepository:
         ).distinct().all()
 
         return cities
+
+    @staticmethod
+    def is_primary(db: Session, user_id: int, city_id: int) -> bool:
+        """
+        Check if a city is the primary favorite for a user
+
+        Args:
+            db: Database session
+            user_id: User ID
+            city_id: City ID
+
+        Returns:
+            True if the city is primary, False otherwise
+        """
+        favorite = db.query(FavoriteCity).filter(
+            FavoriteCity.user_id == user_id,
+            FavoriteCity.city_id == city_id,
+            FavoriteCity.is_primary == True
+        ).first()
+
+        return favorite is not None
+
+    @staticmethod
+    def set_primary(db: Session, user_id: int, city_id: int) -> bool:
+        """
+        Set a city as the primary favorite for a user
+        Unsets all other primary cities for this user
+
+        Args:
+            db: Database session
+            user_id: User ID
+            city_id: City ID to set as primary
+
+        Returns:
+            True if successful, False if city is not in favorites
+        """
+        # First, check if the city is in user's favorites
+        favorite = db.query(FavoriteCity).filter(
+            FavoriteCity.user_id == user_id,
+            FavoriteCity.city_id == city_id
+        ).first()
+
+        if not favorite:
+            return False
+
+        # Unset all primary cities for this user
+        db.query(FavoriteCity).filter(
+            FavoriteCity.user_id == user_id
+        ).update({FavoriteCity.is_primary: False})
+
+        # Set the specified city as primary
+        favorite.is_primary = True
+        db.commit()
+
+        return True

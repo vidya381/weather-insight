@@ -9,11 +9,19 @@ const EXPIRATION_DAYS = 30;
 
 /**
  * Get all guest cities from localStorage
+ * Returns cities sorted by is_primary (primary first), then by addedAt
  */
 export const getGuestCities = () => {
   try {
     const cities = localStorage.getItem(GUEST_CITIES_KEY);
-    return cities ? JSON.parse(cities) : [];
+    const parsed = cities ? JSON.parse(cities) : [];
+
+    // Sort by is_primary (true first), then by addedAt (newest first)
+    return parsed.sort((a, b) => {
+      if (a.is_primary && !b.is_primary) return -1;
+      if (!a.is_primary && b.is_primary) return 1;
+      return new Date(b.addedAt) - new Date(a.addedAt);
+    });
   } catch (error) {
     console.error('Error reading guest cities:', error);
     return [];
@@ -44,11 +52,15 @@ export const addGuestCity = (city) => {
   );
 
   if (!exists) {
+    // Check if this is the first city
+    const isFirstCity = cities.length === 0;
+
     // Add guest prefix to ID if it doesn't have one
     const guestCity = {
       ...city,
       id: city.id?.toString().startsWith('guest-') ? city.id : `guest-${Date.now()}-${city.id}`,
-      addedAt: new Date().toISOString()
+      addedAt: new Date().toISOString(),
+      is_primary: isFirstCity  // First city is automatically primary
     };
 
     cities.push(guestCity);
@@ -63,7 +75,18 @@ export const addGuestCity = (city) => {
  */
 export const removeGuestCity = (cityId) => {
   const cities = getGuestCities();
+
+  // Check if the city being removed is primary
+  const removedCity = cities.find(c => c.id === cityId);
+  const wasPrimary = removedCity?.is_primary;
+
   const filtered = cities.filter(c => c.id !== cityId);
+
+  // If removed city was primary and there are remaining cities, set the first one as primary
+  if (wasPrimary && filtered.length > 0) {
+    filtered[0].is_primary = true;
+  }
+
   saveGuestCities(filtered);
   return filtered;
 };
@@ -117,4 +140,21 @@ export const getGuestCitiesCount = () => {
 export const isGuestFavorite = (cityId) => {
   const cities = getGuestCities();
   return cities.some(c => c.id === cityId);
+};
+
+/**
+ * Set a city as primary favorite for guest
+ * Unsets all other primary cities
+ */
+export const setPrimaryGuestCity = (cityId) => {
+  const cities = getGuestCities();
+
+  // Unset all primary flags
+  const updatedCities = cities.map(city => ({
+    ...city,
+    is_primary: city.id === cityId
+  }));
+
+  saveGuestCities(updatedCities);
+  return updatedCities;
 };

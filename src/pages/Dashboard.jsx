@@ -59,9 +59,10 @@ export default function Dashboard() {
       }
 
       setFavorites(data);
-      // Set first city as selected hero city
+      // Set primary city as selected hero city, or first city if no primary
       if (data.length > 0 && !selectedCity) {
-        setSelectedCity(data[0]);
+        const primaryCity = data.find(city => city.is_primary);
+        setSelectedCity(primaryCity || data[0]);
       } else if (data.length === 0) {
         setSelectedCity(null);
       }
@@ -102,8 +103,20 @@ export default function Dashboard() {
   };
 
   const handleRemoveFavorite = async (removedCity) => {
+    // Check if removed city was primary
+    const wasPrimary = removedCity.is_primary;
+
     // Optimistic update - remove immediately from UI
-    const updatedFavorites = favorites.filter(city => city.id !== removedCity.id);
+    let updatedFavorites = favorites.filter(city => city.id !== removedCity.id);
+
+    // If removed city was primary and there are remaining cities, set the first one as primary
+    if (wasPrimary && updatedFavorites.length > 0) {
+      updatedFavorites = updatedFavorites.map((city, index) => ({
+        ...city,
+        is_primary: index === 0
+      }));
+    }
+
     setFavorites(updatedFavorites);
 
     // If the removed city was the selected one, select the first available
@@ -118,6 +131,11 @@ export default function Dashboard() {
 
   const handleCityCardSelect = (city) => {
     setSelectedCity(city);
+  };
+
+  const handlePrimaryChange = async (cityId) => {
+    // Reload favorites to get updated order and is_primary flags
+    await loadFavorites();
   };
 
   const handleAddCityClick = () => {
@@ -284,6 +302,7 @@ export default function Dashboard() {
                     city={city}
                     onRemove={handleRemoveFavorite}
                     onSelect={handleCityCardSelect}
+                    onPrimaryChange={handlePrimaryChange}
                     isAuthenticated={isAuthenticated}
                   />
                 ))}

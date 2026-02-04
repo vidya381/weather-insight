@@ -28,6 +28,7 @@ class CityResponse(BaseModel):
     longitude: float
     timezone: Optional[str] = None
     is_favorite: Optional[bool] = False
+    is_primary: Optional[bool] = False
 
     class Config:
         from_attributes = True
@@ -122,13 +123,14 @@ async def get_favorite_cities(
 
     **Protected endpoint** - Requires authentication
     """
-    cities = FavoriteCityRepository.get_user_favorites(db, current_user.id)
+    favorites = FavoriteCityRepository.get_user_favorites(db, current_user.id)
 
     # All cities in this list are favorites
     result = []
-    for city in cities:
+    for city, is_primary in favorites:
         city_data = CityResponse.model_validate(city)
         city_data.is_favorite = True
+        city_data.is_primary = is_primary
         result.append(city_data)
 
     return result
@@ -153,6 +155,9 @@ async def add_favorite_city(
             detail="City not found"
         )
 
+    # Check if this is the first city
+    is_first_city = FavoriteCityRepository.get_favorite_count(db, current_user.id) == 0
+
     # Try to add to favorites
     favorite = FavoriteCityRepository.add_favorite(db, current_user.id, city_id)
 
@@ -162,8 +167,13 @@ async def add_favorite_city(
             detail="City is already in favorites"
         )
 
+    # If this is the first city, make it primary
+    if is_first_city:
+        FavoriteCityRepository.set_primary(db, current_user.id, city_id)
+
     city_data = CityResponse.model_validate(city)
     city_data.is_favorite = True
+    city_data.is_primary = is_first_city
 
     return FavoriteResponse(
         message="City added to favorites",
@@ -182,6 +192,9 @@ async def remove_favorite_city(
 
     **Protected endpoint** - Requires authentication
     """
+    # Check if the city being removed is primary
+    was_primary = FavoriteCityRepository.is_primary(db, current_user.id, city_id)
+
     removed = FavoriteCityRepository.remove_favorite(db, current_user.id, city_id)
 
     if not removed:
@@ -189,6 +202,14 @@ async def remove_favorite_city(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="City not in favorites"
         )
+
+    # If removed city was primary, set the next city as primary
+    if was_primary:
+        favorites = FavoriteCityRepository.get_user_favorites(db, current_user.id)
+        if favorites:
+            # Set first remaining city as primary
+            next_city, _ = favorites[0]
+            FavoriteCityRepository.set_primary(db, current_user.id, next_city.id)
 
     return {"message": "City removed from favorites"}
 
@@ -205,3 +226,26 @@ async def get_favorites_count(
     """
     count = FavoriteCityRepository.get_favorite_count(db, current_user.id)
     return {"count": count}
+
+
+@router.put("/favorites/{city_id}/primary", response_model=dict)
+async def set_primary_city(
+    city_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Set a city as the primary favorite
+
+    **Protected endpoint** - Requires authentication
+    Only one city can be primary at a time
+    """
+    success = FavoriteCityRepository.set_primary(db, current_user.id, city_id)
+
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="City not in favorites"
+        )
+
+    return {"message": "Primary city updated", "city_id": city_id}

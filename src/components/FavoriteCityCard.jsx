@@ -1,10 +1,10 @@
 import { useState, useEffect, memo } from 'react';
 import { weatherAPI } from '../api/weather';
 import { citiesAPI } from '../api/cities';
-import { removeGuestCity } from '../utils/guestCities';
+import { removeGuestCity, setPrimaryGuestCity } from '../utils/guestCities';
 import {
   IoSunny, IoPartlySunny, IoCloud, IoRainy, IoSnow,
-  IoThunderstorm, IoCloudyNight
+  IoThunderstorm, IoCloudyNight, IoStar, IoStarOutline
 } from 'react-icons/io5';
 import './FavoriteCityCard.css';
 
@@ -20,10 +20,11 @@ const getWeatherIcon = (condition, size = 48) => {
   return <IoPartlySunny size={size} className="weather-icon weather-icon-cloudy" />;
 };
 
-function FavoriteCityCard({ city, onRemove, onSelect, isAuthenticated = true }) {
+function FavoriteCityCard({ city, onRemove, onSelect, onPrimaryChange, isAuthenticated = true }) {
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [settingPrimary, setSettingPrimary] = useState(false);
 
   useEffect(() => {
     loadWeather();
@@ -63,6 +64,30 @@ function FavoriteCityCard({ city, onRemove, onSelect, isAuthenticated = true }) 
     }
   };
 
+  const handleSetPrimary = async (e) => {
+    e.stopPropagation();
+
+    if (city.is_primary || settingPrimary) return;
+
+    setSettingPrimary(true);
+
+    try {
+      if (isAuthenticated) {
+        await citiesAPI.setPrimaryCity(city.id);
+      } else {
+        setPrimaryGuestCity(city.id);
+      }
+
+      if (onPrimaryChange) {
+        onPrimaryChange(city.id);
+      }
+    } catch (err) {
+      console.error('Failed to set primary city:', err);
+    } finally {
+      setSettingPrimary(false);
+    }
+  };
+
   const handleClick = () => {
     if (onSelect && weather) {
       onSelect(city);
@@ -94,6 +119,15 @@ function FavoriteCityCard({ city, onRemove, onSelect, isAuthenticated = true }) 
 
   return (
     <div className="favorite-city-card" onClick={handleClick}>
+      <button
+        className={`star-btn ${city.is_primary ? 'is-primary' : ''}`}
+        onClick={handleSetPrimary}
+        title={city.is_primary ? 'Primary city' : 'Set as primary city'}
+        disabled={settingPrimary}
+      >
+        {city.is_primary ? <IoStar size={18} /> : <IoStarOutline size={18} />}
+      </button>
+
       <button className="remove-btn" onClick={handleRemove} title="Remove from favorites">
         ×
       </button>

@@ -3,7 +3,7 @@ Favorite City Model
 Association table for user favorite cities
 """
 
-from sqlalchemy import Column, Integer, ForeignKey, DateTime, func, UniqueConstraint
+from sqlalchemy import Column, Integer, ForeignKey, DateTime, Boolean, func, UniqueConstraint
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -16,6 +16,7 @@ class FavoriteCity(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     city_id = Column(Integer, ForeignKey("cities.id", ondelete="CASCADE"), nullable=False)
+    is_primary = Column(Boolean, default=False, nullable=False)
 
     # Timestamp
     added_at = Column(DateTime(timezone=True), server_default=func.now())

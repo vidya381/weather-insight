@@ -46,4 +46,10 @@ export const citiesAPI = {
     const response = await apiClient.get('/api/cities/favorites/count');
     return response.data;
   },
+
+  // Set city as primary favorite
+  setPrimaryCity: async (cityId) => {
+    const response = await apiClient.put(`/api/cities/favorites/${cityId}/primary`);
+    return response.data;
+  },
 };
