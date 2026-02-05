@@ -8,7 +8,10 @@ from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
 
 from app.database import Base, get_db
-from app.main import app
+from app.main import app as fastapi_app
+
+# Import all models so they're registered with Base
+from app import models  # This imports all models from __init__.py
 
 
 # Use in-memory SQLite for testing
@@ -42,7 +45,36 @@ def client(db_session):
         finally:
             pass
 
-    app.dependency_overrides[get_db] = override_get_db
-    with TestClient(app) as test_client:
+    fastapi_app.dependency_overrides[get_db] = override_get_db
+    with TestClient(fastapi_app) as test_client:
         yield test_client
-    app.dependency_overrides.clear()
+    fastapi_app.dependency_overrides.clear()
+
+
+@pytest.fixture(scope="function")
+def auth_headers(client, db_session):
+    """Create authenticated user and return auth headers"""
+    from app.models.user import User
+    from app.auth.password import hash_password
+
+    # Create test user
+    user = User(
+        username="testuser",
+        email="testuser@example.com",
+        password_hash=hash_password("testpassword123")
+    )
+    db_session.add(user)
+    db_session.commit()
+
+    # Login to get token
+    response = client.post(
+        "/api/auth/login",
+        json={
+            "username_or_email": "testuser",
+            "password": "testpassword123"
+        }
+    )
+
+    assert response.status_code == 200, f"Login failed: {response.text}"
+    token = response.json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}

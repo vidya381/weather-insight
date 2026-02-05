@@ -218,7 +218,7 @@ Deletes old data to keep DB size manageable:
 
 ## Testing
 
-### Run Tests (coming soon)
+### Run Tests
 ```bash
 pytest
 pytest --cov=app tests/  # With coverage
