@@ -1,10 +1,10 @@
 # Weather Insight Backend
 
-FastAPI backend with machine learning-powered weather analytics.
+FastAPI backend with ML weather analytics.
 
 ## Overview
 
-The backend is built with FastAPI and provides RESTful APIs for weather data, user management, and ML insights. It follows a layered architecture pattern with clear separation of concerns.
+FastAPI backend with layered architecture (routes → services → repositories → models). Includes ML algorithms for anomaly detection, trend analysis, and pattern clustering.
 
 ## Tech Stack
 
@@ -81,44 +81,17 @@ backend/
 └── README.md
 ```
 
-## Architecture Pattern
+## Architecture
 
-### Layered Architecture
-
+**Layered structure:**
 ```
-┌─────────────────────────────────────────────────┐
-│             Routes Layer                        │
-│  - Request validation (Pydantic)                │
-│  - Authentication checks (JWT)                  │
-│  - Response formatting                          │
-└──────────────────┬──────────────────────────────┘
-                   │
-┌──────────────────▼──────────────────────────────┐
-│            Service Layer                        │
-│  - Business logic                               │
-│  - External API calls (OpenWeather)             │
-│  - Data transformation                          │
-└──────────────────┬──────────────────────────────┘
-                   │
-┌──────────────────▼──────────────────────────────┐
-│          Repository Layer                       │
-│  - Database queries (SQLAlchemy)                │
-│  - CRUD operations                              │
-│  - Query optimization                           │
-└──────────────────┬──────────────────────────────┘
-                   │
-┌──────────────────▼──────────────────────────────┐
-│            Model Layer                          │
-│  - Database schema (SQLAlchemy ORM)             │
-│  - Relationships & constraints                  │
-└─────────────────────────────────────────────────┘
+Routes    → API endpoints, request validation (Pydantic), JWT auth
+Service   → Business logic, OpenWeather API calls
+Repository → Database queries (SQLAlchemy CRUD)
+Model     → Database schema (SQLAlchemy ORM)
 ```
 
-**Benefits:**
-- Clear separation of concerns
-- Easy to test (mock each layer)
-- Maintainable and scalable
-- Reusable business logic
+Each layer only talks to the one below it. Makes testing easier since you can mock each layer.
 
 ## Setup & Installation
 
@@ -183,87 +156,50 @@ Once the server is running, visit:
 
 **Complete API Reference:** See [API_ENDPOINTS.md](./API_ENDPOINTS.md)
 
-## Machine Learning Features
+## Machine Learning
 
-### 1. Anomaly Detection
-**Algorithm:** Z-Score Statistical Method
+### Anomaly Detection (Z-Score)
+Finds unusual temperatures by calculating how many standard deviations away from the mean.
+- Endpoint: `GET /api/ml/anomalies/{city_name}?days=30`
+- Needs 10+ days of data
 
-Detects unusual temperature patterns by calculating how many standard deviations a value is from the mean.
+### Trend Analysis (Linear Regression)
+Predicts next 7 days of temperatures with confidence intervals.
+- Endpoint: `GET /api/ml/trends/{city_name}?days=90`
+- Needs 30+ days of data
+- Returns R² score for confidence
 
-**Endpoint:** `GET /api/ml/anomalies/{city_name}?days=30`
+### Pattern Clustering (K-Means)
+Groups similar weather conditions into 3-5 patterns (Hot & Humid, Cold & Dry, etc).
+- Endpoint: `GET /api/ml/patterns/{city_name}?days=90`
+- Needs 90+ days of data
 
-**Requirements:**
-- Minimum 10 days of historical data
-- Hourly temperature readings
-
-### 2. Trend Analysis
-**Algorithm:** Linear Regression
-
-Predicts future temperatures and identifies warming/cooling trends.
-
-**Endpoint:** `GET /api/ml/trends/{city_name}?days=90`
-
-**Features:**
-- 7-day temperature predictions
-- 95% confidence intervals
-- R² confidence scoring
-- Trend direction (increasing/decreasing/stable)
-
-### 3. Pattern Clustering
-**Algorithm:** K-Means Clustering
-
-Groups similar weather conditions to identify recurring patterns.
-
-**Endpoint:** `GET /api/ml/patterns/{city_name}?days=90`
-
-**Features:**
-- 3-5 weather pattern clusters
-- Pattern classification (Hot & Humid, Cold & Dry, etc.)
-- Frequency distribution
-
-**For detailed ML explanations:** See [../ML_MODELS.md](../ML_MODELS.md)
+See [../ML_MODELS.md](../ML_MODELS.md) for detailed algorithm explanations.
 
 ## Background Jobs
 
-### Weather Collection Job
-**Schedule:** Every hour (via APScheduler)
+### Weather Collection (Hourly)
+Fetches current weather for all favorited cities and stores in database.
+- Manual trigger: `POST /api/jobs/run-weather-collection`
 
-**Purpose:** Collect current weather for all favorited cities
-
-**Process:**
-1. Get all unique cities from `favorite_cities` table
-2. For each city:
-   - Call OpenWeather API
-   - Store in `weather_data` table
-3. Log results
-
-**Endpoint:** `POST /api/jobs/run-weather-collection` (manual trigger)
-
-### Data Retention Job
-**Schedule:** Daily at 2:00 AM
-
-**Purpose:** Clean up old data to manage database size
-
-**Cleanup Rules:**
-- `weather_data`: Delete records > 180 days
-- `ml_anomalies`: Delete records > 90 days
-- `ml_patterns`: Delete records > 90 days
-- `ml_trends`: Delete records > 90 days
-
-**Endpoint:** `POST /api/jobs/run-data-retention` (manual trigger)
+### Data Cleanup (Daily at 2 AM)
+Deletes old data to keep DB size manageable:
+- Weather data > 180 days
+- ML results > 90 days
+- Manual trigger: `POST /api/jobs/run-data-retention`
 
 ## Security
 
-### Authentication
-- **Password Hashing:** bcrypt with 12 salt rounds
-- **JWT Tokens:** HS256 algorithm, 24-hour expiration
-- **Protected Routes:** Require valid JWT in `Authorization: Bearer <token>` header
+**Authentication:**
+- bcrypt password hashing (12 salt rounds)
+- JWT tokens (HS256, 24-hour expiration)
+- Protected routes require `Authorization: Bearer <token>` header
 
-### API Security
-- **CORS:** Configured for specific origins only
-- **Input Validation:** Pydantic schemas validate all inputs
-- **SQL Injection Prevention:** SQLAlchemy ORM (parameterized queries)
-- **Environment Variables:** Secrets stored in `.env` (not committed)
+**API Security:**
+- CORS limited to specific origins
+- Pydantic validates all inputs
+- SQLAlchemy prevents SQL injection (parameterized queries)
+- Secrets in `.env` (gitignored)
 
 ## Database Schema
 
@@ -293,15 +229,14 @@ Use the interactive Swagger UI at http://localhost:8000/docs
 
 ## Performance
 
-### Database Optimizations
-- **Indexes:** On frequently queried columns (city_id, timestamp, user_id)
-- **Connection Pooling:** SQLAlchemy pool_size=10
-- **Query Optimization:** Select only needed columns, use joins efficiently
+**Database:**
+- Indexes on frequently queried columns (city_id, timestamp)
+- Connection pooling (pool_size=10)
 
-### ML Performance
-- **Caching:** ML results cached in database (avoid recomputation)
-- **Async Jobs:** Heavy computations run in background
-- **Data Limits:** Default to 30-90 days of data (configurable)
+**ML:**
+- Results cached in database (no recomputation)
+- Heavy computations run in background jobs
+- Defaults to 30-90 days of data
 
 ## Deployment
 
@@ -324,10 +259,10 @@ docker build -t weather-insight-backend .
 docker run -p 8000:8000 weather-insight-backend
 ```
 
-## Future Improvements
+## TODO
 
-- **Rate Limiting:** Prevent API abuse
-- **Tests:** Increase coverage to 80%+
+- Add rate limiting
+- Write more tests (current coverage is low)
 
 ## Development Notes
 

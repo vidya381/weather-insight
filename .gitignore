@@ -30,7 +30,8 @@ Thumbs.db
 *~
 
 # Planning & Internal Documentation
-WEATHER_PROJECT_PLAN.md
+PROJECT_OVERVIEW.md
+ORACLE_CLOUD_DEPLOYMENT.md
 
 # Python
 __pycache__/

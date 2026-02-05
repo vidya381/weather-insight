@@ -1,10 +1,10 @@
 # Weather Insight Frontend
 
-React-based frontend with intelligent caching, ML insights visualization, and responsive design.
+React + Vite frontend with custom caching hooks and ML visualizations.
 
 ## Overview
 
-The frontend is built with React 18.3 and Vite, featuring a modern component architecture with performance optimizations, custom hooks, and seamless API integration.
+Built with React 18.3 and Vite. Uses Context API for auth, custom hooks for caching weather data, and Recharts for trend visualizations.
 
 ## Tech Stack
 
@@ -67,126 +67,77 @@ src/
 
 ## Key Features
 
-### Component Architecture
+### Component Structure
 
-#### Smart Components (Stateful)
-- **Dashboard** - Manages favorites, selected city, loading states
-- **MLInsights** - Handles city selection for ML analysis
-- **Login/Register** - Form state and validation
+**Pages (stateful)**
+- Dashboard - Manages favorites and selected city
+- MLInsights - City selection for ML analysis
+- Login/Register - Form handling
 
-#### Presentational Components (Memoized)
-- **HeroWeatherCard** - Uses `useCachedWeather` and `useCachedForecast`
-- **FavoriteCityCard** - Memoized with React.memo
-- **WeatherBackground** - Memoized, re-renders only on city change
-- **DailyForecast** - Uses `useCachedForecast`
+**Components (memoized)**
+- HeroWeatherCard - Uses cached weather/forecast
+- FavoriteCityCard - Memoized with React.memo
+- WeatherBackground - Only re-renders on city change
+- DailyForecast - Uses cached forecast data
 
-### Performance Optimizations
+### Performance
 
-#### 1. Custom Caching Hooks
-**useCachedWeather.js** - Prevents duplicate API calls
+**Custom Caching Hooks**
 ```javascript
 const { weather, loading, error } = useCachedWeather(cityName);
-```
-
-**Features:**
-- 10-minute TTL cache
-- In-flight request deduplication
-- Single API call even if 3+ components request same city
-- Reduces API calls by 66%
-
-**useCachedForecast.js** - Same pattern for forecast data
-```javascript
 const { forecast, loading, error } = useCachedForecast(cityName);
 ```
+- Caches for 10 minutes
+- Deduplicates simultaneous requests (3 components requesting same city = 1 API call)
+- Reduces API calls by ~66%
 
-#### 2. React.memo
-Prevents unnecessary re-renders for expensive components:
-- `WeatherBackground` - Only re-renders when city changes
-- `FavoriteCityCard` - Only re-renders when props change
-- `AnomalyDetection`, `TrendAnalysis`, `PatternClustering`
+**React.memo** - Prevents re-renders
+- WeatherBackground, FavoriteCityCard, ML components
+- Only re-renders when props actually change
 
-#### 3. useMemo
-Memoizes expensive calculations:
-- Chart data preparation in `TrendAnalysis`
-- Forecast processing in `DailyForecast`
+**useMemo** - Memoizes calculations
+- Chart data prep in TrendAnalysis
+- Forecast processing in DailyForecast
 
-#### 4. useCallback
-Stabilizes function references in Dashboard:
-```javascript
-const handleCitySelect = useCallback(async (city) => {
-  // Implementation
-}, [isAuthenticated, loadFavorites]);
-```
+**useCallback** - Stabilizes functions
+- Event handlers in Dashboard
+- Prevents child components from re-rendering
 
-### Authentication System
+### Authentication
 
-**AuthContext.jsx** - Centralized auth state
 ```javascript
 const { user, login, logout, register } = useAuth();
 ```
 
-**Features:**
-- JWT token management (localStorage)
-- Automatic token injection (Axios interceptors)
-- Protected routes (redirect to login if not authenticated)
-- User profile state
+- JWT tokens stored in localStorage
+- Auto-injects token in Axios requests
+- Protected routes redirect to login
+- Guest mode: stores up to 10 cities in localStorage (30-day expiration)
+- Guest data migrates to DB on signup
 
-**Guest Mode:**
-- Try app without signup
-- Store cities in localStorage (max 10)
-- 30-day expiration
-- Migrate to database on signup
+### Charts
 
-### Data Visualization
+Uses Recharts for trend visualization in TrendAnalysis component:
+- Temperature line chart with confidence bands
+- Responsive and mobile-friendly
+- Custom tooltips
 
-**Recharts Integration** - `TrendAnalysis.jsx`
-```jsx
-<LineChart data={chartData}>
-  <Line type="monotone" dataKey="temperature" stroke="#3b82f6" />
-  <Line type="monotone" dataKey="upper" stroke="#10b981" strokeDasharray="3 3" />
-  <Line type="monotone" dataKey="lower" stroke="#10b981" strokeDasharray="3 3" />
-</LineChart>
-```
+### Responsive
 
-**Features:**
-- Temperature trends with confidence bands
-- Responsive charts (mobile-friendly)
-- Tooltips with detailed data
-- Custom styling
+Breakpoints: 320px (mobile), 375px, 768px (tablet), 1024px (desktop), 1440px
 
-### Responsive Design
+Mobile optimizations:
+- Touch-friendly 44px buttons
+- Scrollable city cards
+- No hover states (actions always visible)
 
-**Breakpoints:**
-- **320px** - Small mobile (iPhone SE)
-- **375px** - Mobile (iPhone 12/13)
-- **768px** - Tablet
-- **1024px** - Desktop
-- **1440px** - Large desktop
+### Animated Backgrounds
 
-**Mobile Optimizations:**
-- Touch-friendly buttons (44px min height)
-- Scrollable favorite cities
-- Collapsible forecast
-- No hover states (always visible actions)
-
-### Dynamic Backgrounds
-
-**WeatherBackground.jsx** - Animated weather-themed backgrounds
-```javascript
-getBackgroundGradient(condition) {
-  switch(condition) {
-    case 'Clear': return 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-    case 'Rain': return 'linear-gradient(135deg, #4b6cb7 0%, #182848 100%)';
-    // ... more conditions
-  }
-}
-```
-
-**Features:**
-- Particle animations (rain, snow, clear sky)
-- Smooth gradient transitions
-- Weather-specific color themes
-- Performance-optimized with RAF
+WeatherBackground component changes gradient and particles based on weather:
+- Clear: purple gradient with particles
+- Rain: dark blue with rain animation
+- Snow: light blue with snow particles
+- Smooth transitions between conditions
 
 ## Getting Started
 
@@ -292,25 +243,13 @@ import styles from './HeroWeatherCard.module.css';
 }
 ```
 
-### Performance
-- **Service Worker:** Cache API responses offline
-- **Image Optimization:** WebP format, lazy loading
-- **Bundle Analysis:** Code splitting by route
+## React Patterns Used
 
-## Learning Resources
-
-### React Patterns Used
-- Custom Hooks (useCachedWeather, useCachedForecast)
+- Custom hooks (useCachedWeather, useCachedForecast)
 - Context API (AuthContext)
-- Compound Components (WeatherCard with subcomponents)
-- Render Props (CitySearch modal)
-- Higher-Order Components (coming soon: withAuth)
-
-### Performance Patterns
 - Memoization (React.memo, useMemo, useCallback)
-- Code Splitting (React.lazy, Suspense)
-- Caching (custom TTL cache)
-- Optimistic Updates (instant UI feedback)
+- Code splitting (React.lazy for pages)
+- Optimistic updates
 
 ---
 

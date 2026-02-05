@@ -1,29 +1,20 @@
-# Machine Learning Models - Weather Insight
+# Machine Learning Models
 
-This document explains the three machine learning algorithms used in Weather Insight to provide intelligent weather analytics.
+Weather Insight uses three ML algorithms to analyze weather data:
 
----
+1. **Anomaly Detection** - Finds unusual temperatures (Z-Score)
+2. **Trend Analysis** - Predicts future temps (Linear Regression)
+3. **Pattern Clustering** - Groups similar conditions (K-Means)
 
-## Overview
-
-Weather Insight implements three distinct ML features:
-
-1. **Anomaly Detection** - Identifies unusual weather patterns
-2. **Trend Analysis** - Predicts future temperature trends
-3. **Pattern Clustering** - Groups similar weather conditions
-
-All models run on historical weather data collected hourly from the OpenWeather API.
+All models use historical data collected hourly from OpenWeather API.
 
 ---
 
 ## 1. Anomaly Detection
 
-### Purpose
-Identify unusual temperature readings that deviate significantly from normal patterns.
+Finds unusual temperatures that deviate significantly from the mean.
 
-### Algorithm: Z-Score Method
-
-**Statistical Foundation:**
+### Z-Score Method
 ```
 Z-Score = (X - μ) / σ
 
@@ -73,9 +64,8 @@ def detect_anomalies(city_name, days=30):
 | \|z\| ≤ 1.5 | Normal | Within expected range |
 
 ### Data Requirements
-- **Minimum:** 10 days of historical data
-- **Optimal:** 30+ days for accurate statistics
-- **Collection:** Hourly temperature readings
+- Minimum: 10 days of hourly temperature data
+- Optimal: 30+ days for better accuracy
 
 ### Example Output
 
@@ -93,27 +83,22 @@ def detect_anomalies(city_name, days=30):
 ```
 
 ### Use Cases
-- Identify record-breaking temperatures
-- Detect sensor malfunctions (if values are impossible)
-- Alert users to extreme weather events
-- Track climate anomalies over time
+- Spot record-breaking temperatures
+- Catch sensor errors (impossible values)
+- Flag extreme weather
 
 ### Limitations
-- Assumes normal distribution (Gaussian)
-- Sensitive to outliers in small datasets
-- Doesn't account for seasonal trends
-- Requires consistent data quality
+- Assumes normal distribution
+- Outliers mess up small datasets
+- Doesn't handle seasonal patterns well
 
 ---
 
 ## 2. Trend Analysis
 
-### Purpose
-Analyze historical temperature trends and predict future temperatures using linear regression.
+Predicts future temperatures using linear regression on historical data.
 
-### Algorithm: Linear Regression
-
-**Mathematical Model:**
+### Linear Regression
 ```
 y = mx + b
 

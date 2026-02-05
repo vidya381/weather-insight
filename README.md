@@ -1,56 +1,39 @@
 # Weather Insight ☀️🌧️
 
-> AI-powered weather analytics platform with machine learning insights, anomaly detection, and predictive analysis.
+Weather tracking app with ML-powered insights. Track multiple cities, detect temperature anomalies, analyze trends, and find recurring weather patterns.
 
 ![React](https://img.shields.io/badge/React-18.3-61DAFB?style=flat&logo=react&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Python_3.14-009688?style=flat&logo=fastapi&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14-336791?style=flat&logo=postgresql&logoColor=white)
 ![Machine Learning](https://img.shields.io/badge/ML-Scikit--learn-F7931E?style=flat&logo=scikit-learn&logoColor=white)
 
-## Live Demo
+**Live Demo:** https://weather-insight-ml.vercel.app
 
-**[View Live Application](#)** *(https://weather-insight-ml.vercel.app)*
+## What it does
 
-## Overview
+Tracks weather for multiple cities and runs ML analysis on historical data. Backend collects weather data every hour and stores it for analysis. Frontend shows current weather, 5-day forecasts, and ML insights.
 
-Weather Insight is a full-stack weather analytics platform that combines real-time weather data with machine learning to provide intelligent insights beyond basic forecasts. Track multiple cities, detect weather anomalies, analyze temperature trends, and discover recurring weather patterns.
+## Features
 
-### Key Features
+**Dashboard**
+- Add up to 10 favorite cities, set one as primary
+- Current weather and 5-day hourly forecast
+- Guest mode (stores cities in localStorage, migrates to DB on signup)
+- Weather-themed animated backgrounds
 
-#### Multi-City Dashboard
-- Add and manage favorite cities with primary city selection
-- Real-time weather updates with 10-minute intelligent caching
-- 5-day hourly forecast with temperature trends
-- Guest mode with localStorage persistence (migrates on signup)
-- Beautiful weather-themed background animations
+**ML Insights** (requires historical data)
+- **Anomaly Detection** - Flags unusual temperatures using Z-score analysis (needs 10+ days of data)
+- **Trend Analysis** - Predicts next 7 days of temps using linear regression (needs 30+ days)
+- **Pattern Clustering** - Groups similar weather conditions with K-Means (needs 90+ days)
 
-#### Machine Learning Insights
-1. **Anomaly Detection** - Identifies unusual temperature patterns using Z-score analysis
-   - Severity classification (High/Medium/Low)
-   - Statistical deviation from historical averages
-   - Detects record-breaking temperatures and extreme events
+**Auth**
+- JWT tokens with bcrypt password hashing
+- Can use the app without login (guest mode)
 
-2. **Trend Analysis** - Predicts future temperatures using linear regression
-   - 7-day temperature predictions with 95% confidence intervals
-   - R² confidence scoring
-   - Visualized trends with interactive charts (Recharts)
-
-3. **Pattern Clustering** - Groups similar weather conditions using K-Means
-   - Identifies recurring weather patterns (Hot & Humid, Cold & Dry, etc.)
-   - Analyzes temperature, humidity, and pressure together
-   - Pattern frequency distribution
-
-#### Authentication & User Management
-- JWT-based authentication with bcrypt password hashing
-- User profiles with account management
-- Guest mode for trying features before signup
-- Automatic migration of guest cities on registration
-
-#### Performance Optimizations
-- Custom caching hooks (`useCachedWeather`, `useCachedForecast`) with 10-min TTL
-- In-flight request deduplication (reduces API calls by 66%)
-- React.memo, useMemo, and useCallback throughout
-- Optimistic UI updates for instant feedback
+**Performance**
+- Caches weather data for 10 minutes (no duplicate API calls)
+- Background job collects weather every hour for favorited cities
+- React.memo and useMemo to prevent unnecessary re-renders
 
 ## Architecture
 
@@ -129,33 +112,32 @@ weather-insight/
 └── backend/API_ENDPOINTS.md  # Complete API reference
 ```
 
-## Documentation
+## More Documentation
 
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Complete system architecture, database schema, data flow
-- **[ML_MODELS.md](./ML_MODELS.md)** - Machine learning algorithms with mathematical formulas
-- **[API_ENDPOINTS.md](./backend/API_ENDPOINTS.md)** - Full API reference with examples
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture, database schema, data flow
+- [ML_MODELS.md](./ML_MODELS.md) - ML algorithms with math formulas
+- [API_ENDPOINTS.md](./backend/API_ENDPOINTS.md) - API reference with examples
 
-## Key Technical Highlights
+## Technical Details
 
-### Performance
-- **API Caching:** Custom hooks with 10-minute TTL reduce duplicate calls
-- **In-flight Deduplication:** Multiple components requesting same city = 1 API call
-- **Memoization:** React.memo on expensive components (WeatherBackground, cards)
-- **Lazy Loading:** Code splitting for pages (Login, Register, Dashboard, MLInsights)
+**Performance**
+- Custom React hooks cache weather data for 10 minutes
+- Deduplicates simultaneous requests (multiple components requesting same city = 1 API call)
+- React.memo on heavy components (WeatherBackground, weather cards)
+- Lazy loads pages (Dashboard, MLInsights split into separate bundles)
 
-### Data Pipeline
-- **Hourly Collection:** APScheduler job fetches weather for all favorited cities
-- **Data Retention:** Daily cleanup job (180 days for weather, 90 days for ML results)
-- **Migrations:** Alembic for database version control
+**Data Pipeline**
+- APScheduler runs hourly job to fetch weather for favorited cities
+- Daily cleanup removes old data (180 days for weather, 90 days for ML results)
+- Alembic manages database migrations
 
-### Security
-- Passwords hashed with bcrypt (12 salt rounds)
-- JWT tokens with expiration
-- Pydantic validation on all inputs
-- CORS configured for specific origins
-- Environment variables for secrets
+**Security**
+- bcrypt password hashing (12 salt rounds)
+- JWT tokens (24-hour expiration)
+- Pydantic validates all API inputs
+- CORS only allows specific origins
 
-## Local Development (Optional)
+## Local Setup
 
 ### Prerequisites
 - Node.js 18+
@@ -191,32 +173,27 @@ python -m app.main  # http://localhost:8000
 - **Swagger UI:** http://localhost:8000/docs
 - **ReDoc:** http://localhost:8000/redoc
 
-## Features Showcase
+## How it Works
 
-### Intelligent Caching
-- First city view: Fetches from API
-- Same city within 10 min: Instant load from cache
-- Expired cache: Automatically refreshes
+**Caching**
+- First request fetches from API and caches for 10 minutes
+- Subsequent requests use cache (instant load)
+- Cache auto-expires after 10 minutes
 
 ### Guest Mode
 - Try the app without creating an account
-- Add up to 10 favorite cities (stored in localStorage)
-- Data persists for 30 days
-- Migrates to database on signup
+- Cities stored in localStorage (expires after 30 days)
+- Data automatically migrates to DB when you sign up
 
-### ML Insights
-- **Minimum Data:** 10 days for anomaly detection, 30 days for trends
-- **Data Collection:** Hourly automated weather fetching
-- **Background Processing:** ML computations cached for performance
+### ML Data Requirements
+- Anomaly detection needs 10+ days of data
+- Trend analysis needs 30+ days
+- Pattern clustering needs 90+ days
+- Backend collects weather every hour for all favorited cities
 
-This is a full-stack portfolio project demonstrating:
-- Modern React patterns (hooks, context, performance optimization)
-- RESTful API design with FastAPI
-- Machine learning integration in production
-- Database design and ORM usage
-- Authentication and security best practices
-- Background job scheduling
-- Comprehensive documentation
+---
+
+Built with React, FastAPI, PostgreSQL, and Scikit-learn. Uses background jobs for hourly data collection and daily cleanup. See [ARCHITECTURE.md](./ARCHITECTURE.md) for system design and [ML_MODELS.md](./ML_MODELS.md) for algorithm details.
 
 ---
 

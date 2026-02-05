@@ -2,7 +2,7 @@
 
 ## Overview
 
-Weather Insight is a full-stack weather analytics platform that combines real-time weather data with machine learning to provide intelligent insights, anomaly detection, and predictive analysis.
+Full-stack weather app with ML analytics. Tracks weather for multiple cities, detects anomalies, predicts trends, and identifies patterns.
 
 ---
 
@@ -155,30 +155,25 @@ App (ErrorBoundary)
 
 ## Backend Architecture
 
-### Layered Architecture Pattern
+### Layered Architecture
 
-**1. Routes Layer** (`app/routes/`)
-- Entry points for all API requests
-- Request validation (Pydantic schemas)
-- Authentication checks (JWT dependencies)
-- Response formatting
+**Routes** (`app/routes/`)
+- API endpoints
+- Request validation (Pydantic)
+- JWT auth checks
 
-**2. Service Layer** (`app/services/`)
-- Business logic implementation
-- External API calls (OpenWeather)
+**Services** (`app/services/`)
+- Business logic
+- OpenWeather API calls
 - Data transformation
-- Error handling
 
-**3. Repository Layer** (`app/repositories/`)
-- Database queries (SQLAlchemy)
-- CRUD operations
-- Data access abstraction
+**Repositories** (`app/repositories/`)
+- Database queries (SQLAlchemy CRUD)
 - Query optimization
 
-**4. Model Layer** (`app/models/`)
-- Database schema definitions
-- Relationships between tables
-- Constraints and indexes
+**Models** (`app/models/`)
+- Database schema (SQLAlchemy ORM)
+- Table relationships
 
 ### Database Schema
 
